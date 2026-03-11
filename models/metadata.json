@@ -1,0 +1,132 @@
+{
+  "best_model_name": "Ensemble_Optimized Weights",
+  "best_model_accuracy": 0.8213874327088084,
+  "feature_names": [
+    "Age",
+    "Gender",
+    "Country",
+    "Ethnicity",
+    "Family_History",
+    "Radiation_Exposure",
+    "Iodine_Deficiency",
+    "Smoking",
+    "Obesity",
+    "Diabetes",
+    "TSH_Level",
+    "T3_Level",
+    "T4_Level",
+    "Nodule_Size",
+    "Thyroid_Cancer_Risk",
+    "TSH_T3_ratio",
+    "TSH_T4_ratio",
+    "T3_T4_ratio",
+    "T3_T4_product",
+    "Hormone_sum",
+    "Hormone_balance",
+    "Hormone_variance",
+    "TSH_squared",
+    "T3_squared",
+    "T4_squared",
+    "TSH_cubed",
+    "T3_cubed",
+    "T4_cubed",
+    "Nodule_TSH_interaction",
+    "Nodule_T3_interaction",
+    "Nodule_T4_interaction",
+    "Nodule_squared",
+    "Nodule_log",
+    "Nodule_cubed",
+    "Nodule_sqrt",
+    "Age_squared",
+    "Age_log",
+    "Age_cubed",
+    "Age_sqrt",
+    "Age_group",
+    "Age_TSH_interaction",
+    "Age_T3_interaction",
+    "Age_T4_interaction",
+    "Age_Nodule_interaction",
+    "TSH_high",
+    "TSH_low",
+    "TSH_very_high",
+    "TSH_normal",
+    "Nodule_large",
+    "Nodule_very_large",
+    "Nodule_small",
+    "TSH_T3_T4_product",
+    "Nodule_Hormone_sum",
+    "Risk_score"
+  ],
+  "categorical_encoders": {
+    "Gender": {
+      "Female": 0,
+      "Male": 1
+    },
+    "Country": {
+      "Brazil": 0,
+      "China": 1,
+      "Germany": 2,
+      "India": 3,
+      "Japan": 4,
+      "Nigeria": 5,
+      "Russia": 6,
+      "South Korea": 7,
+      "UK": 8,
+      "USA": 9
+    },
+    "Ethnicity": {
+      "African": 0,
+      "Asian": 1,
+      "Caucasian": 2,
+      "Hispanic": 3,
+      "Middle Eastern": 4
+    },
+    "Family_History": {
+      "No": 0,
+      "Yes": 1
+    },
+    "Radiation_Exposure": {
+      "No": 0,
+      "Yes": 1
+    },
+    "Iodine_Deficiency": {
+      "No": 0,
+      "Yes": 1
+    },
+    "Smoking": {
+      "No": 0,
+      "Yes": 1
+    },
+    "Obesity": {
+      "No": 0,
+      "Yes": 1
+    },
+    "Diabetes": {
+      "No": 0,
+      "Yes": 1
+    },
+    "Thyroid_Cancer_Risk": {
+      "High": 0,
+      "Low": 1,
+      "Medium": 2
+    },
+    "Age_group": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3
+    }
+  },
+  "classes": [
+    "Benign",
+    "Malignant"
+  ],
+  "n_features": 54,
+  "training_date": "2026-02-24 13:21:00",
+  "ensemble_method": "Optimized Weights",
+  "individual_accuracies": {
+    "CatBoost": 0.8187545546439737,
+    "LightGBM": 0.8206116739932767,
+    "XGBoost": 0.8196713603986929
+  }
+}

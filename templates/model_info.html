@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Model Info - ThyroNet: Thyroid Nodule Analysis{% endblock %}
+
+{% block content %}
+<div style="background: white; border-radius: 20px; padding: 3rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+    <h1 style="text-align: center; margin-bottom: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        🤖 Model Information
+    </h1>
+
+    <!-- Image Model Section -->
+    <div style="margin-bottom: 3rem;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem;">🖼️ Image Classification Model</h2>
+            <p style="font-size: 1.1rem; opacity: 0.9;">Hybrid Deep Learning Ensemble (ResNet50 + ResNeXt50 + DenseNet121)</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #667eea;">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Architecture</h3>
+                <div style="color: #64748b; line-height: 1.8;">
+                    <p><strong>Model:</strong> Hybrid Ensemble</p>
+                    <p><strong>Type:</strong> Weighted Soft Voting</p>
+                    <p><strong>ResNet50:</strong> 45% weight</p>
+                    <p><strong>ResNeXt50:</strong> 45% weight</p>
+                    <p><strong>DenseNet121:</strong> 10% weight</p>
+                    <p><strong>Input Size:</strong> 224x224 pixels</p>
+                    <p><strong>Classes:</strong> Benign, Malignant</p>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #10b981;">
+                <h3 style="color: #10b981; margin-bottom: 1rem;">Performance</h3>
+                <div style="color: #64748b; line-height: 1.8;">
+                    <p><strong>Accuracy:</strong> 99%</p>
+                    <p><strong>Benign Recall:</strong> 100%</p>
+                    <p><strong>Malignant Recall:</strong> 98%</p>
+                    <p><strong>Macro F1:</strong> 0.98</p>
+                    <p><strong>Weighted F1:</strong> 0.99</p>
+                    <p><strong>Validation Set:</strong> 352 images</p>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #f59e0b;">
+                <h3 style="color: #f59e0b; margin-bottom: 1rem;">Training Details</h3>
+                <div style="color: #64748b; line-height: 1.8;">
+                    <p><strong>Dataset:</strong> Thyroid ultrasound</p>
+                    <p><strong>Training Images:</strong> ~1000+</p>
+                    <p><strong>Validation Images:</strong> 352</p>
+                    <p><strong>Augmentation:</strong> Yes (rotation, flip, zoom)</p>
+                    <p><strong>Ensemble Strategy:</strong> Weighted soft voting</p>
+                    <p><strong>Weights:</strong> ResNet(45%), ResNeXt(45%), DenseNet(10%)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Numerical Model Section -->
+    <div style="margin-bottom: 3rem;">
+        <div style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem;">📊 Clinical Data Model</h2>
+            <p style="font-size: 1.1rem; opacity: 0.9;">Machine Learning model for clinical feature analysis</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #10b981;">
+                <h3 style="color: #10b981; margin-bottom: 1rem;">Algorithm</h3>
+                <div style="color: #64748b; line-height: 1.8;">
+                    <p><strong>Model:</strong> CatBoost Classifier</p>
+                    <p><strong>Type:</strong> Gradient Boosting</p>
+                    <p><strong>Features:</strong> 53 engineered</p>
+                    <p><strong>Original Features:</strong> 15</p>
+                    <p><strong>Engineered:</strong> 38 new features</p>
+                    <p><strong>Classes:</strong> Benign, Malignant</p>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #667eea;">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Performance</h3>
+                <div style="color: #64748b; line-height: 1.8;">
+                    <p><strong>Accuracy:</strong> 82.09%</p>
+                    <p><strong>Precision:</strong> High</p>
+                    <p><strong>Recall:</strong> Balanced</p>
+                    <p><strong>F1 Score:</strong> 0.82</p>
+                    <p><strong>ROC-AUC:</strong> 0.70</p>
+                    <p><strong>Test Set:</strong> 20% holdout</p>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #ef4444;">
+                <h3 style="color: #ef4444; margin-bottom: 1rem;">Data Processing</h3>
+                <div style="color: #64748b; line-height: 1.8;">
+                    <p><strong>Balancing:</strong> BorderlineSMOTE</p>
+                    <p><strong>Scaling:</strong> MinMaxScaler</p>
+                    <p><strong>Encoding:</strong> LabelEncoder</p>
+                    <p><strong>Missing Values:</strong> Handled</p>
+                    <p><strong>Outliers:</strong> Managed</p>
+                    <p><strong>Cross-Validation:</strong> 5-fold</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Categories -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">📋 Clinical Features</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0;">
+                <h4 style="color: #667eea; margin-bottom: 1rem;">👤 Demographics</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>Age</li>
+                    <li>Gender</li>
+                    <li>Country</li>
+                    <li>Ethnicity</li>
+                </ul>
+            </div>
+
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0;">
+                <h4 style="color: #10b981; margin-bottom: 1rem;">🏥 Medical History</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>Family History</li>
+                    <li>Radiation Exposure</li>
+                    <li>Iodine Deficiency</li>
+                    <li>Smoking</li>
+                    <li>Obesity</li>
+                    <li>Diabetes</li>
+                </ul>
+            </div>
+
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0;">
+                <h4 style="color: #f59e0b; margin-bottom: 1rem;">🔬 Lab Results</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>TSH Level</li>
+                    <li>T3 Level</li>
+                    <li>T4 Level</li>
+                    <li>Nodule Size</li>
+                    <li>Cancer Risk</li>
+                </ul>
+            </div>
+
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #ef4444;">
+                <h4 style="color: #ef4444; margin-bottom: 1rem;">⚙️ Engineered</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>Age Groups</li>
+                    <li>Hormone Ratios</li>
+                    <li>Risk Interactions</li>
+                    <li>Combined Features</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Metadata -->
+    {% if metadata %}
+    <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #667eea; margin-bottom: 3rem;">
+        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">📊 Saved Model Metadata</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            {% for key, value in metadata.items() %}
+            <div style="background: white; padding: 1rem; border-radius: 8px;">
+                <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.25rem;">{{ key }}</div>
+                <div style="color: #334155; font-weight: 600;">{{ value }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- System Capabilities -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 3rem;">
+        <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">✨ System Capabilities</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            <div>
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+                <h4 style="margin-bottom: 0.5rem;">Real-Time</h4>
+                <p style="opacity: 0.9; font-size: 0.9rem;">Instant predictions in under 1 second</p>
+            </div>
+            <div>
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+                <h4 style="margin-bottom: 0.5rem;">High Accuracy</h4>
+                <p style="opacity: 0.9; font-size: 0.9rem;">99% image, 82% clinical accuracy</p>
+            </div>
+            <div>
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
+                <h4 style="margin-bottom: 0.5rem;">Secure</h4>
+                <p style="opacity: 0.9; font-size: 0.9rem;">Protected with authentication</p>
+            </div>
+            <div>
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📱</div>
+                <h4 style="margin-bottom: 0.5rem;">Responsive</h4>
+                <p style="opacity: 0.9; font-size: 0.9rem;">Works on all devices</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="text-align: center;">
+        <a href="/predict" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; margin: 0.5rem; transition: transform 0.3s;">
+            🔮 Try Prediction
+        </a>
+        <a href="/dashboard" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; margin: 0.5rem; transition: transform 0.3s;">
+            📊 View Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    a:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}

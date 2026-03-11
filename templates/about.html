@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}About - ThyroNet: Thyroid Nodule Analysis{% endblock %}
+
+{% block content %}
+<div style="background: white; border-radius: 20px; padding: 3rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+    <h1 style="text-align: center; margin-bottom: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        🏥 About ThyroNet: Thyroid Nodule Analysis
+    </h1>
+
+    <!-- Mission -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 3rem; text-align: center;">
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Our Mission</h2>
+        <p style="font-size: 1.2rem; line-height: 1.8; opacity: 0.95;">
+            To provide accurate, fast, and accessible thyroid cancer detection using advanced artificial intelligence,
+            helping healthcare professionals make informed decisions and improve patient outcomes.
+        </p>
+    </div>
+
+    <!-- What is ThyroNet AI -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">🤖 What is ThyroNet: Thyroid Nodule Analysis?</h2>
+        <p style="color: #64748b; line-height: 1.8; font-size: 1.1rem; margin-bottom: 1rem;">
+            ThyroNet: Thyroid Nodule Analysis is an advanced medical diagnostic system that uses artificial intelligence to detect thyroid cancer
+            through two complementary approaches:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #667eea;">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">🖼️ Image Analysis</h3>
+                <p style="color: #64748b; line-height: 1.8;">
+                    Hybrid deep learning ensemble combining ResNet50, ResNeXt50, and DenseNet121 with weighted soft voting
+                    (45%, 45%, 10%) achieves 99% accuracy on thyroid ultrasound images.
+                </p>
+            </div>
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #10b981;">
+                <h3 style="color: #10b981; margin-bottom: 1rem;">📊 Clinical Analysis</h3>
+                <p style="color: #64748b; line-height: 1.8;">
+                    Machine learning model (CatBoost) evaluates 53 clinical features including demographics,
+                    medical history, and lab results with 82% accuracy.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Features -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">✨ Key Features</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎯</div>
+                <h4 style="color: #334155; margin-bottom: 0.5rem;">High Accuracy</h4>
+                <p style="color: #64748b; font-size: 0.9rem;">99% image and 82% clinical accuracy</p>
+            </div>
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚡</div>
+                <h4 style="color: #334155; margin-bottom: 0.5rem;">Real-Time</h4>
+                <p style="color: #64748b; font-size: 0.9rem;">Instant predictions in under 1 second</p>
+            </div>
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔒</div>
+                <h4 style="color: #334155; margin-bottom: 0.5rem;">Secure</h4>
+                <p style="color: #64748b; font-size: 0.9rem;">Protected with authentication</p>
+            </div>
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">📱</div>
+                <h4 style="color: #334155; margin-bottom: 0.5rem;">Responsive</h4>
+                <p style="color: #64748b; font-size: 0.9rem;">Works on all devices</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technology Stack -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">🛠️ Technology Stack</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 10px;">
+                <h4 style="color: #667eea; margin-bottom: 1rem;">Deep Learning</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>PyTorch</li>
+                    <li>ResNet50</li>
+                    <li>ResNeXt50</li>
+                    <li>DenseNet121</li>
+                    <li>Weighted Ensemble</li>
+                </ul>
+            </div>
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 10px;">
+                <h4 style="color: #10b981; margin-bottom: 1rem;">Machine Learning</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>CatBoost</li>
+                    <li>Scikit-learn</li>
+                    <li>Feature Engineering</li>
+                </ul>
+            </div>
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 10px;">
+                <h4 style="color: #f59e0b; margin-bottom: 1rem;">Web Framework</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>Flask</li>
+                    <li>Bootstrap 5</li>
+                    <li>JavaScript</li>
+                </ul>
+            </div>
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 10px;">
+                <h4 style="color: #ef4444; margin-bottom: 1rem;">Data Processing</h4>
+                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
+                    <li>Pandas</li>
+                    <li>NumPy</li>
+                    <li>SMOTE</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">⚙️ How It Works</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+            <div style="text-align: center;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem;">1</div>
+                <h4 style="color: #334155; margin-bottom: 0.5rem;">Upload Data</h4>
+                <p style="color: #64748b; font-size: 0.9rem;">Upload ultrasound image or enter clinical data</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem;">2</div>
+                <h4 style="color: #334155; margin-bottom: 0.5rem;">AI Analysis</h4>
+                <p style="color: #64748b; font-size: 0.9rem;">Advanced algorithms process and analyze the data</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem;">3</div>
+                <h4 style="color: #334155; margin-bottom: 0.5rem;">Get Results</h4>
+                <p style="color: #64748b; font-size: 0.9rem;">Receive instant prediction with confidence score</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div style="background: #fef3c7; border-left: 5px solid #f59e0b; padding: 1.5rem; border-radius: 10px; margin-bottom: 3rem;">
+        <h3 style="color: #92400e; margin-bottom: 1rem;">⚠️ Medical Disclaimer</h3>
+        <p style="color: #78350f; line-height: 1.8;">
+            ThyroNet: Thyroid Nodule Analysis is designed for research and educational purposes. This system should be used as a supportive tool
+            and not as a replacement for professional medical diagnosis. Always consult with qualified healthcare professionals
+            for medical decisions and treatment plans.
+        </p>
+    </div>
+
+    <!-- Contact -->
+    <div style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px;">
+        <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">📧 Get Started</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.95;">
+            Ready to experience AI-powered thyroid cancer detection?
+        </p>
+        <a href="/predict" style="display: inline-block; background: white; color: #667eea; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; transition: transform 0.3s;">
+            🔮 Start Prediction
+        </a>
+    </div>
+</div>
+
+<style>
+    a:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}

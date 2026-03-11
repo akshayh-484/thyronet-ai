@@ -1,0 +1,48 @@
+================================================================================
+SAMPLE DATA FOR TESTING NUMERICAL PREDICTION
+================================================================================
+
+SAMPLE 1: BENIGN CASE
+--------------------------------------------------------------------------------
+Age: 66
+Gender: Male
+Country: Russia
+Ethnicity: Caucasian
+Family_History: No
+Radiation_Exposure: Yes
+Iodine_Deficiency: No
+Smoking: No
+Obesity: No
+Diabetes: No
+TSH_Level: 9.37
+T3_Level: 1.67
+T4_Level: 6.16
+Nodule_Size: 1.08
+Thyroid_Cancer_Risk: Low
+
+SAMPLE 2: MALIGNANT CASE
+--------------------------------------------------------------------------------
+Age: 89
+Gender: Female
+Country: South Korea
+Ethnicity: Asian
+Family_History: Yes
+Radiation_Exposure: Yes
+Iodine_Deficiency: No
+Smoking: No
+Obesity: Yes
+Diabetes: No
+TSH_Level: 4.7
+T3_Level: 0.62
+T4_Level: 11.73
+Nodule_Size: 0.01
+Thyroid_Cancer_Risk: High
+
+================================================================================
+HOW TO USE:
+================================================================================
+1. Go to http://localhost:5000/predict
+2. Stay on 'Numerical Features' tab
+3. Copy values from above into the form
+4. Select prediction method
+5. Click 'Predict Risk'

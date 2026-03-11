@@ -1,0 +1,445 @@
+{% extends "base.html" %}
+{% block title %}Predict - ThyroNet: Thyroid Nodule Analysis{% endblock %}
+{% block extra_css %}
+<style>
+    .predict-container {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    h1 {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .tabs {
+        display: flex;
+        background: #f1f5f9;
+        border-radius: 12px;
+        margin-bottom: 2.5rem;
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .tab {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        color: #64748b;
+    }
+    
+    .tab:hover {
+        background: rgba(255, 255, 255, 0.5);
+        color: #475569;
+    }
+    
+    .tab.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .upload-area {
+        border: 3px dashed #cbd5e1;
+        border-radius: 16px;
+        padding: 4rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+    
+    .upload-area:hover {
+        border-color: #667eea;
+        background: #f1f5f9;
+        transform: translateY(-2px);
+    }
+    
+    .upload-area h3 {
+        color: #475569;
+        margin-top: 1rem;
+        font-weight: 600;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+        position: relative;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 600;
+        color: #334155;
+        font-size: 0.9rem;
+        text-transform: capitalize;
+    }
+    
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23667eea'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1.25rem;
+        padding-right: 2.5rem;
+    }
+    
+    .method-selector {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 12px;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+    }
+    
+    .method-selector label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1rem;
+    }
+    
+    .method-selector select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        background: white;
+        cursor: pointer;
+    }
+    
+    .btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.25rem 2.5rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .btn:active {
+        transform: translateY(0);
+    }
+    
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .result {
+        display: none;
+        margin-top: 2.5rem;
+        padding: 2.5rem;
+        border-radius: 16px;
+        animation: slideIn 0.5s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .result h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+    
+    .result.benign {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        color: white;
+    }
+    
+    .result.malignant {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+        color: white;
+    }
+    
+    .confidence-bar {
+        width: 100%;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 6px;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+    
+    .confidence-fill {
+        height: 100%;
+        background: white;
+        border-radius: 6px;
+        transition: width 0.8s ease;
+    }
+    
+    @keyframes slideIn {
+        from { 
+            opacity: 0; 
+            transform: translateY(30px);
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .predict-container {
+            padding: 1.5rem;
+        }
+        
+        h1 {
+            font-size: 1.75rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .tabs {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="predict-container">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Make a Prediction</h1>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('numerical')">📊 Numerical Features</div>
+        <div class="tab" onclick="switchTab('image')">📸 Upload Image</div>
+    </div>
+    <div id="numerical-tab" class="tab-content active">
+        <form id="numericalForm" onsubmit="predictNumerical(event)">
+            <div class="method-selector">
+                <label>🎯 Prediction Method</label>
+                <select id="predictionMethod">
+                    <option value="single">Single Best Model (Random Forest)</option>
+                    <option value="best" selected>🏆 Ensemble - Best Method (Recommended)</option>
+                    <option value="ensemble-voting">Ensemble - Voting (Average)</option>
+                    <option value="ensemble-stacking">Ensemble - Stacking (Meta-learner)</option>
+                    <option value="ensemble-weighted">Ensemble - Weighted (Performance-based)</option>
+                    <option value="ensemble-all">Ensemble - All Methods (Comparison)</option>
+                </select>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-section-title">👤 Patient Demographics</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Age</label>
+                        <input type="number" name="Age" min="0" max="120" required placeholder="Enter age">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select name="Gender" required>
+                            <option value="">Select gender...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" name="Country" required placeholder="e.g., USA">
+                    </div>
+                    <div class="form-group">
+                        <label>Ethnicity</label>
+                        <select name="Ethnicity" required>
+                            <option value="">Select ethnicity...</option>
+                            <option value="Caucasian">Caucasian</option>
+                            <option value="Asian">Asian</option>
+                            <option value="African">African</option>
+                            <option value="Hispanic">Hispanic</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-section-title">🏥 Medical History</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Family History</label>
+                        <select name="Family_History" required>
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Radiation Exposure</label>
+                        <select name="Radiation_Exposure" required>
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Iodine Deficiency</label>
+                        <select name="Iodine_Deficiency" required>
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Smoking</label>
+                        <select name="Smoking" required>
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Obesity</label>
+                        <select name="Obesity" required>
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Diabetes</label>
+                        <select name="Diabetes" required>
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-section-title">🔬 Lab Results</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>TSH Level (mIU/L)</label>
+                        <input type="number" name="TSH_Level" step="0.01" required placeholder="e.g., 2.5">
+                    </div>
+                    <div class="form-group">
+                        <label>T3 Level (ng/dL)</label>
+                        <input type="number" name="T3_Level" step="0.01" required placeholder="e.g., 1.5">
+                    </div>
+                    <div class="form-group">
+                        <label>T4 Level (μg/dL)</label>
+                        <input type="number" name="T4_Level" step="0.01" required placeholder="e.g., 8.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Nodule Size (cm)</label>
+                        <input type="number" name="Nodule_Size" step="0.01" required placeholder="e.g., 0.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Thyroid Cancer Risk</label>
+                        <select name="Thyroid_Cancer_Risk" required>
+                            <option value="">Select risk level...</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">🔮 Predict Risk</button>
+        </form>
+        <div class="result" id="numericalResult"></div>
+    </div>
+    <div id="image-tab" class="tab-content">
+        <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+            <strong style="color: #667eea;">ℹ️ Important:</strong>
+            <p style="margin: 0.5rem 0 0 0; color: #475569; font-size: 0.95rem;">
+                This model is trained specifically for <strong>thyroid ultrasound images</strong>. 
+                For accurate results, please upload grayscale medical ultrasound images only. 
+                Random photos or non-medical images will produce unreliable predictions.
+            </p>
+        </div>
+        <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+            <div style="font-size: 3rem;">📤</div>
+            <h3>Click or Drag Image Here</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.5rem;">Upload thyroid ultrasound image (JPG, PNG, BMP, TIFF)</p>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+        </div>
+        <img id="previewImage" style="max-width: 300px; margin: 1rem auto; display: none; border-radius: 10px;">
+        <button class="btn" id="predictImageBtn" onclick="predictImage()" disabled>Analyze Image</button>
+        <div class="result" id="imageResult"></div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/predict.js') }}?v={{ v }}"></script>
+{% endblock %}

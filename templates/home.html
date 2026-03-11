@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Home - ThyroNet: Thyroid Nodule Analysis{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <h1 class="display-3 fw-bold">ThyroNet: Thyroid Nodule Analysis</h1>
+        <p class="lead">Advanced Thyroid Cancer Detection Using Artificial Intelligence</p>
+        <div class="mt-4">
+            <a href="{{ url_for('predict_page') }}" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-stethoscope me-2"></i>Start Diagnosis
+            </a>
+            <a href="#features" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-info-circle me-2"></i>Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Image Accuracy</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">82%</div>
+                    <div class="stat-label">Clinical Data Accuracy</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Prediction Methods</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">&lt;1s</div>
+                    <div class="stat-label">Response Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold text-white">Our Advanced Features</h2>
+            <p class="lead text-white">Dual prediction system for comprehensive diagnosis</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Hybrid Deep Learning Ensemble</h3>
+                    <p>ResNet50 + ResNeXt50 + DenseNet121 ensemble achieving 99% accuracy on ultrasound image analysis</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Clinical Analysis</h3>
+                    <p>CatBoost ML model with 82% accuracy analyzing 53 clinical features</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Real-Time Results</h3>
+                    <p>Instant predictions with confidence scores and detailed analysis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5" style="background: white;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+            <p class="lead text-muted">Simple 3-step process for accurate diagnosis</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="mb-3">
+                    <div class="feature-icon" style="font-size: 4rem;">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                </div>
+                <h4>1. Upload Data</h4>
+                <p class="text-muted">Upload ultrasound image or enter patient clinical data</p>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <div class="mb-3">
+                    <div class="feature-icon" style="font-size: 4rem;">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                </div>
+                <h4>2. AI Analysis</h4>
+                <p class="text-muted">Our AI models analyze the data using advanced algorithms</p>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <div class="mb-3">
+                    <div class="feature-icon" style="font-size: 4rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <h4>3. Get Results</h4>
+                <p class="text-muted">Receive instant prediction with confidence score</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container text-center text-white">
+        <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+        <p class="lead mb-4">Experience the power of AI-driven thyroid cancer detection</p>
+        <a href="{{ url_for('predict_page') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-stethoscope me-2"></i>Start Diagnosis Now
+        </a>
+    </div>
+</section>
+{% endblock %}

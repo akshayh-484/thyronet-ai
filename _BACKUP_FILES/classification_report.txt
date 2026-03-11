@@ -1,0 +1,10 @@
+Classification Report - Random Forest
+================================================================================
+              precision    recall  f1-score   support
+
+      Benign     0.8486    0.9363    0.8903      7673
+   Malignant     0.6812    0.4491    0.5413      2327
+
+    accuracy                         0.8229     10000
+   macro avg     0.7649    0.6927    0.7158     10000
+weighted avg     0.8096    0.8229    0.8091     10000

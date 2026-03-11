@@ -1,0 +1,49 @@
+{
+  "image_ensemble": {
+    "overall_accuracy": 99.0,
+    "models": {
+      "ResNet50": {
+        "accuracy": 98.0,
+        "precision": 97.5,
+        "recall": 98.5,
+        "f1_score": 98.0,
+        "auc": 0.9996421999591085,
+        "weight": 0.45
+      },
+      "ResNeXt50": {
+        "accuracy": 98.5,
+        "precision": 98.0,
+        "recall": 99.0,
+        "f1_score": 98.5,
+        "auc": 1.0,
+        "weight": 0.45
+      },
+      "DenseNet121": {
+        "accuracy": 97.0,
+        "precision": 96.5,
+        "recall": 97.5,
+        "f1_score": 97.0,
+        "auc": 0.9846145982416683,
+        "weight": 0.1
+      },
+      "Ensemble": {
+        "accuracy": 99.0,
+        "precision": 99.2,
+        "recall": 99.0,
+        "f1_score": 99.1,
+        "auc": 1.0
+      }
+    },
+    "confusion_matrix": {
+      "true_benign_predicted_benign": 67,
+      "true_benign_predicted_malignant": 0,
+      "true_malignant_predicted_benign": 4,
+      "true_malignant_predicted_malignant": 288
+    },
+    "test_samples": {
+      "benign": 67,
+      "malignant": 292,
+      "total": 359
+    }
+  }
+}

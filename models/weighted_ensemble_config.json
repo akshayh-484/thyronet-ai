@@ -1,0 +1,7 @@
+{
+  "weights": {
+    "Logistic Regression": 0.32858266648956047,
+    "Random Forest": 0.3382888652288489,
+    "XGBoost": 0.33312846828159054
+  }
+}

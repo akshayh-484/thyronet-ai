@@ -1,0 +1,65 @@
+{
+  "best_model_name": "Stacking Ensemble",
+  "best_model_accuracy": 0.7775,
+  "best_model_roc_auc": 0.6970235718538755,
+  "feature_names": [
+    "Age",
+    "Gender",
+    "Country",
+    "Ethnicity",
+    "Family_History",
+    "Radiation_Exposure",
+    "Iodine_Deficiency",
+    "Smoking",
+    "Obesity",
+    "Diabetes",
+    "TSH_Level",
+    "T3_Level",
+    "T4_Level",
+    "Nodule_Size",
+    "Thyroid_Cancer_Risk"
+  ],
+  "classes": [
+    "Benign",
+    "Malignant"
+  ],
+  "n_features": 15,
+  "training_date": "2026-02-21 18:14:26",
+  "all_models": {
+    "Logistic Regression": {
+      "accuracy": 0.6865,
+      "precision": 0.3805309734513274,
+      "recall": 0.5548387096774193,
+      "f1_score": 0.45144356955380577,
+      "roc_auc": 0.6688760463731569
+    },
+    "Random Forest": {
+      "accuracy": 0.784,
+      "precision": 0.5374149659863946,
+      "recall": 0.5096774193548387,
+      "f1_score": 0.5231788079470199,
+      "roc_auc": 0.6886343735771077
+    },
+    "XGBoost": {
+      "accuracy": 0.771,
+      "precision": 0.5077605321507761,
+      "recall": 0.4924731182795699,
+      "f1_score": 0.5,
+      "roc_auc": 0.6781296627088369
+    },
+    "Voting Ensemble": {
+      "accuracy": 0.769,
+      "precision": 0.5032397408207343,
+      "recall": 0.5010752688172043,
+      "f1_score": 0.5021551724137931,
+      "roc_auc": 0.6807551399250463
+    },
+    "Stacking Ensemble": {
+      "accuracy": 0.7775,
+      "precision": 0.5220264317180616,
+      "recall": 0.5096774193548387,
+      "f1_score": 0.515778019586507,
+      "roc_auc": 0.6970235718538755
+    }
+  }
+}

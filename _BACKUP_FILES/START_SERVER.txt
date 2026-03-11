@@ -1,0 +1,32 @@
+═══════════════════════════════════════════════════════════════
+                    HOW TO START YOUR WEBSITE
+═══════════════════════════════════════════════════════════════
+
+STEP 1: Open a NEW terminal/command prompt window
+
+STEP 2: Navigate to your project folder:
+   cd C:\Users\Aksha\Desktop\THYRONET
+
+STEP 3: Run this command:
+   python app_enhanced.py
+
+STEP 4: You will see output like:
+   * Running on http://127.0.0.1:5000
+   * Running on http://localhost:5000
+
+STEP 5: Open your web browser and go to:
+   http://localhost:5000
+
+═══════════════════════════════════════════════════════════════
+
+WHAT'S WORKING:
+✅ Image Prediction (Deep Learning) - Upload ultrasound images
+✅ Numerical Prediction (ML) - Enter patient data
+✅ Ensemble Prediction - Best accuracy with combined models
+
+═══════════════════════════════════════════════════════════════
+
+TO STOP THE SERVER:
+Press Ctrl+C in the terminal window
+
+═══════════════════════════════════════════════════════════════
