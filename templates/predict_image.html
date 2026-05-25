@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Image Analysis — ThyroNet{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-zone {
+        border: 2px dashed rgba(99,102,241,0.4);
+        border-radius: 16px;
+        background: rgba(99,102,241,0.05);
+        padding: 3rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+        border-color: rgba(99,102,241,0.8);
+        background: rgba(99,102,241,0.1);
+    }
+    .upload-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+    .demo-thumb {
+        cursor: pointer;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.08);
+        transition: all 0.3s;
+    }
+    .demo-thumb:hover {
+        border-color: rgba(99,102,241,0.5);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(99,102,241,0.2);
+    }
+    .demo-thumb img {
+        width: 100%;
+        height: 130px;
+        object-fit: cover;
+        display: block;
+    }
+    .demo-thumb-label {
+        background: rgba(255,255,255,0.05);
+        padding: 0.4rem 0.6rem;
+        font-size: 0.78rem;
+        color: #94a3b8;
+        text-align: center;
+    }
+    .prob-bar-wrap { margin-bottom: 0.75rem; }
+    .prob-bar-label { display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.88rem; }
+    .spinner-ring {
+        width: 56px; height: 56px;
+        border: 4px solid rgba(99,102,241,0.2);
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+        margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="glass-card p-4 mb-4 animate-fade-up" style="background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(99,102,241,0.2)); border-color:rgba(99,102,241,0.35);">
+    <div class="text-center">
+        <div style="font-size:3rem; margin-bottom:0.75rem;">🔬</div>
+        <h1 style="font-size:2.2rem; font-weight:800; color:#e2e8f0; margin-bottom:0.5rem;">Thyroid Ultrasound Image Analysis</h1>
+        <p style="color:#94a3b8; font-size:1.05rem;">3 YOLO detection models + 8 classifier ensemble · 87% accuracy · TN5000 dataset</p>
+    </div>
+</div>
+
+<!-- Model Status -->
+<div id="modelStatus" class="alert alert-info animate-fade-up delay-1 mb-4">
+    <i class="fas fa-spinner fa-spin me-2"></i>Checking model availability…
+</div>
+
+<!-- Upload Section -->
+<div id="uploadSection" style="display:none;">
+    <div class="glass-card p-4 mb-4 animate-fade-up delay-1">
+        <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:1rem;"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Image</h5>
+
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('imageInput').click()">
+            <div class="upload-icon">🖼️</div>
+            <h5 style="color:#e2e8f0; margin-bottom:0.5rem;">Drag &amp; Drop Image Here</h5>
+            <p style="color:#64748b; margin-bottom:1rem;">or click to browse files</p>
+            <input type="file" id="imageInput" accept="image/*" style="display:none;">
+            <div style="display:inline-block; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:white; padding:0.6rem 1.5rem; border-radius:10px; font-weight:600; font-size:0.9rem;">
+                <i class="fas fa-folder-open me-2"></i>Browse Files
+            </div>
+            <p style="color:#64748b; font-size:0.8rem; margin-top:1rem; margin-bottom:0;">PNG, JPG, JPEG, BMP, TIFF · Max 32 MB</p>
+        </div>
+    </div>
+
+    <!-- Image Preview -->
+    <div id="imagePreview" class="glass-card p-4 mb-4" style="display:none;">
+        <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:1rem;"><i class="fas fa-image me-2"></i>Selected Image</h5>
+        <div class="text-center mb-3">
+            <img id="previewImg" src="" alt="Preview" style="max-height:380px; max-width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+        </div>
+        <div class="d-flex gap-3 justify-content-center">
+            <button class="btn btn-glow" id="predictBtn">
+                <i class="fas fa-brain me-2"></i>Analyse Image
+            </button>
+            <button id="clearBtn" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#94a3b8; border-radius:12px; padding:0.75rem 1.5rem; font-weight:600; cursor:pointer;">
+                <i class="fas fa-times me-2"></i>Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingSection" class="glass-card p-4 mb-4 text-center" style="display:none;">
+        <div class="spinner-ring"></div>
+        <p style="color:#94a3b8; margin:0;">Analysing image — running YOLO detection + 8 classifiers…</p>
+        <p style="color:#64748b; font-size:0.85rem; margin-top:0.4rem;">This may take a few seconds.</p>
+    </div>
+
+    <!-- Results -->
+    <div id="resultsSection" style="display:none;">
+
+        <!-- Prediction Badge -->
+        <div id="predictionBadge" class="glass-card p-4 mb-4 text-center">
+            <div id="predictionIcon" style="font-size:3rem; margin-bottom:0.5rem;"></div>
+            <div id="predictionLabel" style="font-size:2rem; font-weight:800; margin-bottom:0.25rem;"></div>
+            <div id="predictionConfidence" style="font-size:1.1rem; color:#94a3b8;"></div>
+            <div id="detectionConfidence" style="font-size:0.9rem; color:#64748b; margin-top:0.25rem;"></div>
+        </div>
+
+        <!-- Bounding Box Visualization -->
+        <div id="segmentationSection" class="glass-card p-4 mb-4" style="display:none;">
+            <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:1rem;"><i class="fas fa-vector-square me-2"></i>Detection Visualization</h5>
+            <div class="text-center">
+                <img id="segmentationImg" src="" alt="Detection" style="max-height:400px; max-width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+            </div>
+        </div>
+
+        <!-- Probability Bars -->
+        <div id="probabilitySection" class="glass-card p-4 mb-4" style="display:none;">
+            <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:1.25rem;"><i class="fas fa-chart-bar me-2"></i>Probability Breakdown</h5>
+            <div class="prob-bar-wrap">
+                <div class="prob-bar-label">
+                    <span style="color:#6ee7b7; font-weight:600;"><i class="fas fa-circle me-1"></i>Benign</span>
+                    <span id="probBenignText" style="color:#6ee7b7; font-weight:700;"></span>
+                </div>
+                <div class="progress" style="height:14px;">
+                    <div id="probBenignBar" class="progress-bar" style="background:linear-gradient(90deg,#10b981,#34d399); width:0%;"></div>
+                </div>
+            </div>
+            <div class="prob-bar-wrap">
+                <div class="prob-bar-label">
+                    <span style="color:#fca5a5; font-weight:600;"><i class="fas fa-circle me-1"></i>Malignant</span>
+                    <span id="probMalignantText" style="color:#fca5a5; font-weight:700;"></span>
+                </div>
+                <div class="progress" style="height:14px;">
+                    <div id="probMalignantBar" class="progress-bar" style="background:linear-gradient(90deg,#ef4444,#f87171); width:0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Individual Model Predictions -->
+        <div id="individualModels" class="glass-card p-4 mb-4" style="display:none;">
+            <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:1rem;"><i class="fas fa-list me-2"></i>Individual Model Predictions</h5>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Prediction</th>
+                            <th>Confidence</th>
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody id="individualModelsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Error Section -->
+        <div id="errorSection" class="alert alert-danger mb-4" style="display:none;">
+            <i class="fas fa-exclamation-triangle me-2"></i><span id="errorText"></span>
+        </div>
+
+        <div class="text-center mb-4">
+            <button class="btn btn-glow" id="analyzeAnotherBtn">
+                <i class="fas fa-redo me-2"></i>Analyse Another Image
+            </button>
+        </div>
+    </div>
+
+    <!-- Demo Images -->
+    <div class="glass-card p-4 animate-fade-up delay-2">
+        <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:1rem;"><i class="fas fa-images me-2"></i>Try Demo Images</h5>
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="demo-thumb" data-demo="demo_images/benign_1_confidence99.jpg">
+                    <img src="{{ url_for('static', filename='demo_images/benign_1_confidence99.jpg') }}" alt="Benign 1">
+                    <div class="demo-thumb-label">✅ Benign Sample 1</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="demo-thumb" data-demo="demo_images/malignant_2_confidence99.jpg">
+                    <img src="{{ url_for('static', filename='demo_images/malignant_2_confidence99.jpg') }}" alt="Malignant 1">
+                    <div class="demo-thumb-label">⚠️ Malignant Sample 1</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="demo-thumb" data-demo="demo_images/benign_2_confidence95.jpg">
+                    <img src="{{ url_for('static', filename='demo_images/benign_2_confidence95.jpg') }}" alt="Benign 2">
+                    <div class="demo-thumb-label">✅ Benign Sample 2</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="demo-thumb" data-demo="demo_images/benign_3_confidence95.jpg">
+                    <img src="{{ url_for('static', filename='demo_images/benign_3_confidence95.jpg') }}" alt="Benign 3">
+                    <div class="demo-thumb-label">✅ Benign Sample 3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedFile = null;
+
+// ── Check model status ──
+fetch('/image-predictor-status')
+    .then(r => r.json())
+    .then(data => {
+        const el = document.getElementById('modelStatus');
+        if (data.success && data.available) {
+            el.className = 'alert alert-success animate-fade-up delay-1 mb-4';
+            el.innerHTML = '<i class="fas fa-check-circle me-2"></i>Image prediction models loaded successfully — ready for analysis.';
+            document.getElementById('uploadSection').style.display = 'block';
+        } else {
+            el.className = 'alert alert-danger animate-fade-up delay-1 mb-4';
+            el.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Image prediction models not available. Ensure model files are in <code>models_retrained/</code>.';
+        }
+    })
+    .catch(err => {
+        const el = document.getElementById('modelStatus');
+        el.className = 'alert alert-danger animate-fade-up delay-1 mb-4';
+        el.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error checking model status: ' + err.message;
+    });
+
+// ── Drag & drop ──
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+});
+
+document.getElementById('imageInput').addEventListener('change', e => {
+    if (e.target.files.length > 0) handleFile(e.target.files[0]);
+});
+
+function handleFile(file) {
+    if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return; }
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('previewImg').src = e.target.result;
+        document.getElementById('imagePreview').style.display = 'block';
+        document.getElementById('resultsSection').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+// ── Predict ──
+document.getElementById('predictBtn').addEventListener('click', () => {
+    if (!selectedFile) return;
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('loadingSection').style.display = 'block';
+    document.getElementById('resultsSection').style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    fetch('/predict-image-upload', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('loadingSection').style.display = 'none';
+            displayResults(data);
+        })
+        .catch(err => {
+            document.getElementById('loadingSection').style.display = 'none';
+            showError(err.message);
+        });
+});
+
+function showError(msg) {
+    document.getElementById('errorSection').style.display = 'block';
+    document.getElementById('errorText').textContent = msg;
+    document.getElementById('predictionBadge').style.display = 'none';
+    document.getElementById('segmentationSection').style.display = 'none';
+    document.getElementById('probabilitySection').style.display = 'none';
+    document.getElementById('individualModels').style.display = 'none';
+    document.getElementById('resultsSection').style.display = 'block';
+}
+
+function displayResults(data) {
+    document.getElementById('errorSection').style.display = 'none';
+
+    if (!data.success) { showError(data.error || 'Unknown error'); return; }
+
+    const isMalignant = data.prediction === 'Malignant';
+
+    // Badge
+    const badge = document.getElementById('predictionBadge');
+    badge.style.borderColor = isMalignant ? 'rgba(239,68,68,0.4)' : 'rgba(16,185,129,0.4)';
+    badge.style.background = isMalignant
+        ? 'linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.08))'
+        : 'linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.08))';
+    badge.style.display = 'block';
+
+    document.getElementById('predictionIcon').textContent = isMalignant ? '⚠️' : '✅';
+    document.getElementById('predictionLabel').style.color = isMalignant ? '#fca5a5' : '#6ee7b7';
+    document.getElementById('predictionLabel').textContent = data.prediction;
+    document.getElementById('predictionConfidence').textContent = 'Confidence: ' + data.confidence + '%';
+    if (data.detection_confidence !== undefined) {
+        document.getElementById('detectionConfidence').textContent = 'Detection confidence: ' + data.detection_confidence + '%';
+    }
+
+    // Segmentation image
+    if (data.segmentation_image) {
+        document.getElementById('segmentationImg').src = data.segmentation_image;
+        document.getElementById('segmentationSection').style.display = 'block';
+    }
+
+    // Probability bars
+    if (data.probabilities) {
+        const pB = data.probabilities.Benign || 0;
+        const pM = data.probabilities.Malignant || 0;
+        document.getElementById('probBenignText').textContent = pB + '%';
+        document.getElementById('probMalignantText').textContent = pM + '%';
+        document.getElementById('probBenignBar').style.width = pB + '%';
+        document.getElementById('probMalignantBar').style.width = pM + '%';
+        document.getElementById('probabilitySection').style.display = 'block';
+    }
+
+    // Individual model predictions
+    if (data.individual_predictions && Object.keys(data.individual_predictions).length > 0) {
+        const tbody = document.getElementById('individualModelsBody');
+        let html = '';
+        for (const [name, pred] of Object.entries(data.individual_predictions)) {
+            const color = pred.prediction === 'Malignant' ? '#fca5a5' : '#6ee7b7';
+            const icon  = pred.prediction === 'Malignant' ? '⚠️' : '✅';
+            html += `<tr>
+                <td style="color:#e2e8f0; font-weight:600;">${name}</td>
+                <td><span style="color:${color}; font-weight:700;">${icon} ${pred.prediction}</span></td>
+                <td style="color:#94a3b8;">${pred.confidence}%</td>
+                <td style="color:#64748b;">${pred.weight}%</td>
+            </tr>`;
+        }
+        tbody.innerHTML = html;
+        document.getElementById('individualModels').style.display = 'block';
+    }
+
+    document.getElementById('resultsSection').style.display = 'block';
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Clear / Analyse Another ──
+function resetUI() {
+    selectedFile = null;
+    document.getElementById('imageInput').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('resultsSection').style.display = 'none';
+}
+document.getElementById('clearBtn').addEventListener('click', resetUI);
+document.getElementById('analyzeAnotherBtn').addEventListener('click', resetUI);
+
+// ── Demo images ──
+document.querySelectorAll('.demo-thumb').forEach(card => {
+    card.addEventListener('click', () => {
+        fetch('/static/' + card.dataset.demo)
+            .then(r => r.blob())
+            .then(blob => {
+                const file = new File([blob], card.dataset.demo.split('/').pop(), { type: 'image/jpeg' });
+                handleFile(file);
+            });
+    });
+});
+</script>
+{% endblock %}

@@ -1,148 +1,612 @@
 {% extends "base.html" %}
+{% block title %}ThyroNet — AI Thyroid Cancer Analysis{% endblock %}
 
-{% block title %}Home - ThyroNet: Thyroid Nodule Analysis{% endblock %}
+{% block extra_css %}
+<style>
+/* Hero */
+.hero {
+    min-height: 88vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 4rem 0 2rem;
+}
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(99,102,241,0.15);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 30px;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #a5b4fc;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+.hero-badge .dot {
+    width: 6px; height: 6px;
+    background: #6366f1;
+    border-radius: 50%;
+    animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.5; transform:scale(1.5); }
+}
+.hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: white;
+    margin-bottom: 1.5rem;
+}
+.hero h1 .gradient-text {
+    background: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 40%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.hero p.lead {
+    font-size: 1.15rem;
+    color: rgba(148,163,184,0.9);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+}
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-outline-glow {
+    background: transparent;
+    border: 1px solid rgba(99,102,241,0.4);
+    color: #a5b4fc;
+    border-radius: 12px;
+    padding: 0.75rem 1.75rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.btn-outline-glow:hover {
+    background: rgba(99,102,241,0.15);
+    border-color: rgba(99,102,241,0.7);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Floating visual */
+.hero-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hero-orb {
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(99,102,241,0.3), rgba(139,92,246,0.2), rgba(6,182,212,0.1), transparent 70%);
+    border: 1px solid rgba(99,102,241,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: orb-pulse 6s ease infinite;
+    position: relative;
+}
+@keyframes orb-pulse {
+    0%,100% { transform: scale(1); box-shadow: 0 0 60px rgba(99,102,241,0.2); }
+    50%      { transform: scale(1.03); box-shadow: 0 0 100px rgba(99,102,241,0.35); }
+}
+.orb-inner {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(15,23,42,0.8);
+    border: 1px solid rgba(99,102,241,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 4rem;
+    animation: orb-inner-spin 20s linear infinite;
+}
+@keyframes orb-inner-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.orb-inner span { animation: counter-spin 20s linear infinite; }
+@keyframes counter-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(-360deg); }
+}
+.orbit-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed rgba(99,102,241,0.25);
+    animation: orbit-rotate linear infinite;
+}
+.orbit-ring:nth-child(1) { width: 340px; height: 340px; animation-duration: 12s; }
+.orbit-ring:nth-child(2) { width: 390px; height: 390px; animation-duration: 18s; animation-direction: reverse; }
+@keyframes orbit-rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.orbit-dot {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    top: -5px; left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Stats bar */
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin: 3rem 0;
+}
+.stat-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: default;
+}
+.stat-item:hover {
+    background: rgba(99,102,241,0.1);
+    border-color: rgba(99,102,241,0.3);
+    transform: translateY(-4px);
+}
+.stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a5b4fc, #67e8f9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+.stat-lbl {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Section titles */
+.section-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #6366f1;
+    margin-bottom: 0.75rem;
+}
+.section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.75rem;
+}
+.section-sub {
+    color: #64748b;
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto 3rem;
+}
+
+/* Tool cards */
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+.tool-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.tool-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--card-color, rgba(99,102,241,0.08)), transparent);
+    opacity: 0;
+    transition: opacity 0.35s;
+}
+.tool-card:hover {
+    border-color: var(--card-border, rgba(99,102,241,0.4));
+    transform: translateY(-6px);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3), 0 0 0 1px var(--card-border, rgba(99,102,241,0.2));
+}
+.tool-card:hover::before { opacity: 1; }
+.tool-icon-wrap {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
+}
+.tool-card h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.6rem;
+    position: relative;
+    z-index: 1;
+}
+.tool-card p {
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+.tool-acc {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+.tool-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 1;
+}
+.tool-link:hover { transform: translateX(4px); }
+
+/* How it works */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+.step-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    position: relative;
+    transition: all 0.3s;
+}
+.step-card:hover {
+    background: rgba(99,102,241,0.07);
+    border-color: rgba(99,102,241,0.25);
+    transform: translateY(-4px);
+}
+.step-num {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: white;
+    box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+}
+.step-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+.step-card h5 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+.step-card p { color: #64748b; font-size: 0.88rem; line-height: 1.6; }
+
+/* CTA */
+.cta-section {
+    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(99,102,241,0.08), transparent 60%);
+    animation: cta-glow 8s ease infinite;
+}
+@keyframes cta-glow {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.1); }
+}
+.cta-section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+.cta-section p {
+    color: #94a3b8;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+.cta-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 992px) {
+    .hero-visual { display: none; }
+    .stats-bar { grid-template-columns: repeat(3, 1fr); }
+    .steps-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 576px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 2.2rem; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container hero-content">
-        <h1 class="display-3 fw-bold">ThyroNet: Thyroid Nodule Analysis</h1>
-        <p class="lead">Advanced Thyroid Cancer Detection Using Artificial Intelligence</p>
-        <div class="mt-4">
-            <a href="{{ url_for('predict_page') }}" class="btn btn-primary btn-lg me-3">
-                <i class="fas fa-stethoscope me-2"></i>Start Diagnosis
+
+<!-- ── HERO ── -->
+<section class="hero">
+    <div class="row align-items-center w-100">
+        <div class="col-lg-6">
+            <div class="hero-badge animate-fade-up">
+                <span class="dot"></span>
+                AI-Powered Medical Analysis
+            </div>
+            <h1 class="animate-fade-up delay-1">
+                Detect Thyroid<br>
+                <span class="gradient-text">Cancer with AI</span>
+            </h1>
+            <p class="lead animate-fade-up delay-2">
+                ThyroNet combines deep learning image analysis, ensemble ML models, and clinical scoring to deliver comprehensive thyroid nodule assessment in seconds.
+            </p>
+            <div class="hero-btns animate-fade-up delay-3">
+                <a href="/predict-image" class="btn btn-glow">
+                    <i class="fas fa-microscope me-2"></i>Analyse Image
+                </a>
+                <a href="/cancer-risk-page" class="btn btn-outline-glow">
+                    <i class="fas fa-dna me-2"></i>Cancer Risk
+                </a>
+                <a href="#tools" class="btn btn-outline-glow">
+                    <i class="fas fa-th-large me-2"></i>All Tools
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6 hero-visual animate-fade-up delay-2">
+            <div class="hero-orb">
+                <div class="orbit-ring">
+                    <div class="orbit-dot" style="background:#6366f1;box-shadow:0 0 10px #6366f1;"></div>
+                </div>
+                <div class="orbit-ring">
+                    <div class="orbit-dot" style="background:#06b6d4;box-shadow:0 0 10px #06b6d4;"></div>
+                </div>
+                <div class="orb-inner">
+                    <span>🧬</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats-bar scroll-reveal">
+    <div class="stat-item">
+        <div class="stat-num" data-target="87">0</div>
+        <div class="stat-lbl">Image Accuracy %</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num" data-target="93">0</div>
+        <div class="stat-lbl">Disease Detection %</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num" data-target="92">0</div>
+        <div class="stat-lbl">Cancer Risk AUC %</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num" data-target="80">0</div>
+        <div class="stat-lbl">Cancer Risk AUC %</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num" data-target="3">0</div>
+        <div class="stat-lbl">AI Modules</div>
+    </div>
+</div>
+
+<!-- ── TOOLS ── -->
+<section id="tools" class="py-4 scroll-reveal">
+    <div class="text-center mb-5">
+        <div class="section-eyebrow">Prediction Modules</div>
+        <h2 class="section-title">Three Specialised AI Tools</h2>
+        <p class="section-sub">Each module targets a different clinical question — from initial screening to disease monitoring.</p>
+    </div>
+
+    <div class="tool-grid">
+
+        <!-- Image Analysis -->
+        <div class="tool-card" style="--card-color:rgba(99,102,241,0.1);--card-border:rgba(99,102,241,0.4);">
+            <div class="tool-icon-wrap" style="background:linear-gradient(135deg,rgba(99,102,241,0.3),rgba(139,92,246,0.2));">🔬</div>
+            <span class="tool-acc" style="background:rgba(99,102,241,0.2);color:#a5b4fc;">87% Accuracy · 8 Models</span>
+            <h4>Ultrasound Image Analysis</h4>
+            <p>Upload a thyroid ultrasound image. DenseNet121, ResNet50, VGG16, ConvNeXt and 4 more models vote together to classify the nodule as Benign or Malignant.</p>
+            <a href="/predict-image" class="tool-link" style="background:rgba(99,102,241,0.15);color:#a5b4fc;">
+                <span><i class="fas fa-microscope me-2"></i>Analyse Image</span>
+                <i class="fas fa-arrow-right"></i>
             </a>
-            <a href="#features" class="btn btn-outline-light btn-lg">
-                <i class="fas fa-info-circle me-2"></i>Learn More
+        </div>
+
+        <!-- Cancer Risk -->
+        <div class="tool-card" style="--card-color:rgba(239,68,68,0.08);--card-border:rgba(239,68,68,0.35);">
+            <div class="tool-icon-wrap" style="background:linear-gradient(135deg,rgba(239,68,68,0.3),rgba(220,38,38,0.2));">🎗️</div>
+            <span class="tool-acc" style="background:rgba(239,68,68,0.15);color:#fca5a5;">AUC 80% · 7 Models</span>
+            <h4>Cancer Risk Assessment</h4>
+            <p>Enter nodule characteristics — composition, echogenicity, shape, margins, calcifications — to get a Benign / Malignant probability from a trained ML ensemble.</p>
+            <a href="/cancer-risk-page" class="tool-link" style="background:rgba(239,68,68,0.12);color:#fca5a5;">
+                <span><i class="fas fa-dna me-2"></i>Assess Risk</span>
+                <i class="fas fa-arrow-right"></i>
             </a>
         </div>
+
+        <!-- TI-RADS -->
+        <div class="tool-card" style="--card-color:rgba(6,182,212,0.08);--card-border:rgba(6,182,212,0.35);">
+            <div class="tool-icon-wrap" style="background:linear-gradient(135deg,rgba(6,182,212,0.3),rgba(8,145,178,0.2));">📊</div>
+            <span class="tool-acc" style="background:rgba(6,182,212,0.15);color:#67e8f9;">ACR TI-RADS · Clinical Standard</span>
+            <h4>TI-RADS Calculator</h4>
+            <p>Rule-based ACR TI-RADS scoring. Select 5 ultrasound features and instantly get TR1–TR5 classification with FNA biopsy recommendations.</p>
+            <a href="/tirads-page" class="tool-link" style="background:rgba(6,182,212,0.12);color:#67e8f9;">
+                <span><i class="fas fa-calculator me-2"></i>Calculate Score</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Thyroid Disease -->
+        <div class="tool-card" style="--card-color:rgba(16,185,129,0.08);--card-border:rgba(16,185,129,0.35);">
+            <div class="tool-icon-wrap" style="background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(5,150,105,0.2));">🩺</div>
+            <span class="tool-acc" style="background:rgba(16,185,129,0.15);color:#6ee7b7;">93% Accuracy · 9,168 Patients</span>
+            <h4>Thyroid Disease Detection</h4>
+            <p>Enter TSH, T3, T4 hormone levels to classify thyroid function as Hypothyroid, Hyperthyroid, or Normal using 8 trained models.</p>
+            <a href="/predict-thyroid-disease-page" class="tool-link" style="background:rgba(16,185,129,0.12);color:#6ee7b7;">
+                <span><i class="fas fa-heartbeat me-2"></i>Detect Disease</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
     </div>
 </section>
 
-<!-- Stats Section -->
-<section class="stats-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3 col-sm-6 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">99%</div>
-                    <div class="stat-label">Image Accuracy</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">82%</div>
-                    <div class="stat-label">Clinical Data Accuracy</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">2</div>
-                    <div class="stat-label">Prediction Methods</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">&lt;1s</div>
-                    <div class="stat-label">Response Time</div>
-                </div>
-            </div>
-        </div>
+<!-- ── HOW IT WORKS ── -->
+<section class="py-4 scroll-reveal">
+    <div class="text-center mb-5">
+        <div class="section-eyebrow">Workflow</div>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-sub">Three simple steps to get a comprehensive thyroid assessment.</p>
     </div>
-</section>
 
-<!-- Features Section -->
-<section id="features" class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold text-white">Our Advanced Features</h2>
-            <p class="lead text-white">Dual prediction system for comprehensive diagnosis</p>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-icon">📤</div>
+            <h5>Input Data</h5>
+            <p>Upload an ultrasound image or enter patient clinical data — hormone levels, nodule features, or staging information.</p>
         </div>
-        
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3>Hybrid Deep Learning Ensemble</h3>
-                    <p>ResNet50 + ResNeXt50 + DenseNet121 ensemble achieving 99% accuracy on ultrasound image analysis</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Clinical Analysis</h3>
-                    <p>CatBoost ML model with 82% accuracy analyzing 53 clinical features</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Real-Time Results</h3>
-                    <p>Instant predictions with confidence scores and detailed analysis</p>
-                </div>
-            </div>
+        <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-icon">⚡</div>
+            <h5>AI Processing</h5>
+            <p>Multiple deep learning and ensemble ML models analyse the data simultaneously, each contributing a weighted vote.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-icon">📈</div>
+            <h5>Instant Results</h5>
+            <p>Get a prediction with confidence score, probability breakdown, per-model votes, and clinical recommendations.</p>
         </div>
     </div>
 </section>
 
-<!-- How It Works -->
-<section class="py-5" style="background: white;">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold">How It Works</h2>
-            <p class="lead text-muted">Simple 3-step process for accurate diagnosis</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-md-4 text-center">
-                <div class="mb-3">
-                    <div class="feature-icon" style="font-size: 4rem;">
-                        <i class="fas fa-upload"></i>
-                    </div>
-                </div>
-                <h4>1. Upload Data</h4>
-                <p class="text-muted">Upload ultrasound image or enter patient clinical data</p>
-            </div>
-            
-            <div class="col-md-4 text-center">
-                <div class="mb-3">
-                    <div class="feature-icon" style="font-size: 4rem;">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                </div>
-                <h4>2. AI Analysis</h4>
-                <p class="text-muted">Our AI models analyze the data using advanced algorithms</p>
-            </div>
-            
-            <div class="col-md-4 text-center">
-                <div class="mb-3">
-                    <div class="feature-icon" style="font-size: 4rem;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                </div>
-                <h4>3. Get Results</h4>
-                <p class="text-muted">Receive instant prediction with confidence score</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container text-center text-white">
-        <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
-        <p class="lead mb-4">Experience the power of AI-driven thyroid cancer detection</p>
-        <a href="{{ url_for('predict_page') }}" class="btn btn-light btn-lg">
-            <i class="fas fa-stethoscope me-2"></i>Start Diagnosis Now
+<!-- ── CTA ── -->
+<section class="cta-section scroll-reveal">
+    <h2>Ready to Analyse?</h2>
+    <p>Start with an ultrasound image or enter clinical data — results in under a second.</p>
+    <div class="cta-btns">
+        <a href="/predict-image" class="btn btn-glow btn-lg">
+            <i class="fas fa-microscope me-2"></i>Image Analysis
+        </a>
+        <a href="/cancer-risk-page" class="btn btn-outline-glow btn-lg">
+            <i class="fas fa-dna me-2"></i>Cancer Risk
+        </a>
+        <a href="/tirads-page" class="btn btn-outline-glow btn-lg">
+            <i class="fas fa-calculator me-2"></i>TI-RADS
         </a>
     </div>
 </section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animated counter
+function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 2000;
+    const step = target / (duration / 16);
+    let current = 0;
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        el.textContent = Math.floor(current);
+    }, 16);
+}
+
+// Trigger counters when stats come into view
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.querySelectorAll('[data-target]').forEach(animateCounter);
+            statsObserver.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.3 });
+
+const statsBar = document.querySelector('.stats-bar');
+if (statsBar) statsObserver.observe(statsBar);
+</script>
 {% endblock %}

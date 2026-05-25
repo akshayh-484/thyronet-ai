@@ -1,213 +1,283 @@
 {% extends "base.html" %}
 
-{% block title %}Model Info - ThyroNet: Thyroid Nodule Analysis{% endblock %}
+{% block title %}Model Info — ThyroNet{% endblock %}
 
 {% block content %}
-<div style="background: white; border-radius: 20px; padding: 3rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-    <h1 style="text-align: center; margin-bottom: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        🤖 Model Information
-    </h1>
 
-    <!-- Image Model Section -->
-    <div style="margin-bottom: 3rem;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
-            <h2 style="font-size: 2rem; margin-bottom: 1rem;">🖼️ Image Classification Model</h2>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Hybrid Deep Learning Ensemble (ResNet50 + ResNeXt50 + DenseNet121)</p>
+<!-- Header -->
+<div class="glass-card p-4 mb-4 animate-fade-up" style="background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(139,92,246,0.2)); border-color:rgba(99,102,241,0.3);">
+    <div class="text-center">
+        <div style="font-size:3rem; margin-bottom:0.75rem;">🤖</div>
+        <h1 style="font-size:2.2rem; font-weight:800; color:#e2e8f0; margin-bottom:0.5rem;">Model Information</h1>
+        <p style="color:#94a3b8; font-size:1.05rem;">Technical details for all ThyroNet prediction modules</p>
+    </div>
+</div>
+
+<!-- Image Pipeline Section -->
+<div class="glass-card p-4 mb-4 animate-fade-up delay-1">
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <div style="width:44px; height:44px; background:linear-gradient(135deg,#6366f1,#8b5cf6); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;">🖼️</div>
+        <div>
+            <h2 style="color:#a5b4fc; font-size:1.4rem; font-weight:700; margin:0;">Image Analysis Pipeline</h2>
+            <p style="color:#64748b; font-size:0.88rem; margin:0;">3 YOLO detection models + 8 classifier models · TN5000 dataset · 87% ensemble accuracy</p>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <!-- YOLO Models -->
+        <div class="col-md-4">
+            <div style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:1.25rem; height:100%;">
+                <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:0.75rem; font-size:0.95rem;">
+                    <i class="fas fa-search me-2"></i>YOLO Detection Models (3)
+                </h5>
+                <div style="color:#94a3b8; font-size:0.85rem; line-height:1.9;">
+                    <div class="d-flex justify-content-between">
+                        <span>YOLOv8m</span><span style="color:#a5b4fc;">mAP50 96.5%</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>YOLOv8l</span><span style="color:#a5b4fc;">mAP50 97.4%</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>YOLOv9c</span><span style="color:#a5b4fc;">mAP50 97.4%</span>
+                    </div>
+                    <hr style="border-color:rgba(255,255,255,0.08); margin:0.5rem 0;">
+                    <div class="d-flex justify-content-between">
+                        <span>Task</span><span style="color:#e2e8f0;">Nodule localization</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Classes</span><span style="color:#e2e8f0;">1 (nodule)</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #667eea;">
-                <h3 style="color: #667eea; margin-bottom: 1rem;">Architecture</h3>
-                <div style="color: #64748b; line-height: 1.8;">
-                    <p><strong>Model:</strong> Hybrid Ensemble</p>
-                    <p><strong>Type:</strong> Weighted Soft Voting</p>
-                    <p><strong>ResNet50:</strong> 45% weight</p>
-                    <p><strong>ResNeXt50:</strong> 45% weight</p>
-                    <p><strong>DenseNet121:</strong> 10% weight</p>
-                    <p><strong>Input Size:</strong> 224x224 pixels</p>
-                    <p><strong>Classes:</strong> Benign, Malignant</p>
+        <!-- Classifiers -->
+        <div class="col-md-4">
+            <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); border-radius:12px; padding:1.25rem; height:100%;">
+                <h5 style="color:#6ee7b7; font-weight:700; margin-bottom:0.75rem; font-size:0.95rem;">
+                    <i class="fas fa-brain me-2"></i>Classifier Models (8)
+                </h5>
+                <div style="color:#94a3b8; font-size:0.85rem; line-height:1.9;">
+                    <div class="d-flex justify-content-between"><span>DenseNet121</span><span style="color:#6ee7b7;">85%</span></div>
+                    <div class="d-flex justify-content-between"><span>ResNet50</span><span style="color:#6ee7b7;">85%</span></div>
+                    <div class="d-flex justify-content-between"><span>ResNet152</span><span style="color:#6ee7b7;">84%</span></div>
+                    <div class="d-flex justify-content-between"><span>MobileNetV3</span><span style="color:#6ee7b7;">80%</span></div>
+                    <div class="d-flex justify-content-between"><span>EfficientNetB4</span><span style="color:#6ee7b7;">83%</span></div>
+                    <div class="d-flex justify-content-between"><span>VGG16</span><span style="color:#6ee7b7;">87%</span></div>
+                    <div class="d-flex justify-content-between"><span>InceptionV3</span><span style="color:#6ee7b7;">85%</span></div>
+                    <div class="d-flex justify-content-between"><span>ConvNeXt</span><span style="color:#6ee7b7;">85%</span></div>
                 </div>
             </div>
+        </div>
 
-            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #10b981;">
-                <h3 style="color: #10b981; margin-bottom: 1rem;">Performance</h3>
-                <div style="color: #64748b; line-height: 1.8;">
-                    <p><strong>Accuracy:</strong> 99%</p>
-                    <p><strong>Benign Recall:</strong> 100%</p>
-                    <p><strong>Malignant Recall:</strong> 98%</p>
-                    <p><strong>Macro F1:</strong> 0.98</p>
-                    <p><strong>Weighted F1:</strong> 0.99</p>
-                    <p><strong>Validation Set:</strong> 352 images</p>
-                </div>
-            </div>
-
-            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #f59e0b;">
-                <h3 style="color: #f59e0b; margin-bottom: 1rem;">Training Details</h3>
-                <div style="color: #64748b; line-height: 1.8;">
-                    <p><strong>Dataset:</strong> Thyroid ultrasound</p>
-                    <p><strong>Training Images:</strong> ~1000+</p>
-                    <p><strong>Validation Images:</strong> 352</p>
-                    <p><strong>Augmentation:</strong> Yes (rotation, flip, zoom)</p>
-                    <p><strong>Ensemble Strategy:</strong> Weighted soft voting</p>
-                    <p><strong>Weights:</strong> ResNet(45%), ResNeXt(45%), DenseNet(10%)</p>
+        <!-- Pipeline Details -->
+        <div class="col-md-4">
+            <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2); border-radius:12px; padding:1.25rem; height:100%;">
+                <h5 style="color:#fcd34d; font-weight:700; margin-bottom:0.75rem; font-size:0.95rem;">
+                    <i class="fas fa-cogs me-2"></i>Pipeline Details
+                </h5>
+                <div style="color:#94a3b8; font-size:0.85rem; line-height:1.9;">
+                    <div class="d-flex justify-content-between"><span>Ensemble Accuracy</span><span style="color:#fcd34d; font-weight:700;">87%</span></div>
+                    <div class="d-flex justify-content-between"><span>Dataset</span><span style="color:#e2e8f0;">TN5000</span></div>
+                    <div class="d-flex justify-content-between"><span>Total Images</span><span style="color:#e2e8f0;">5,000</span></div>
+                    <div class="d-flex justify-content-between"><span>Input Size</span><span style="color:#e2e8f0;">224×224 px</span></div>
+                    <div class="d-flex justify-content-between"><span>Preprocessing</span><span style="color:#e2e8f0;">CLAHE</span></div>
+                    <div class="d-flex justify-content-between"><span>Framework</span><span style="color:#e2e8f0;">PyTorch 2.10</span></div>
+                    <div class="d-flex justify-content-between"><span>Train/Val Split</span><span style="color:#e2e8f0;">80 / 20</span></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Numerical Model Section -->
-    <div style="margin-bottom: 3rem;">
-        <div style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
-            <h2 style="font-size: 2rem; margin-bottom: 1rem;">📊 Clinical Data Model</h2>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Machine Learning model for clinical feature analysis</p>
+    <!-- Pipeline Steps -->
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:1rem 1.25rem;">
+        <p style="color:#64748b; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Pipeline Flow</p>
+        <div class="d-flex align-items-center gap-2 flex-wrap" style="font-size:0.88rem; color:#94a3b8;">
+            <span style="background:rgba(99,102,241,0.2); border-radius:8px; padding:0.3rem 0.7rem; color:#a5b4fc;">1. Upload Image</span>
+            <i class="fas fa-arrow-right" style="color:#64748b;"></i>
+            <span style="background:rgba(99,102,241,0.2); border-radius:8px; padding:0.3rem 0.7rem; color:#a5b4fc;">2. YOLO Ensemble Detection</span>
+            <i class="fas fa-arrow-right" style="color:#64748b;"></i>
+            <span style="background:rgba(99,102,241,0.2); border-radius:8px; padding:0.3rem 0.7rem; color:#a5b4fc;">3. Crop Nodule Region</span>
+            <i class="fas fa-arrow-right" style="color:#64748b;"></i>
+            <span style="background:rgba(99,102,241,0.2); border-radius:8px; padding:0.3rem 0.7rem; color:#a5b4fc;">4. CLAHE Preprocessing</span>
+            <i class="fas fa-arrow-right" style="color:#64748b;"></i>
+            <span style="background:rgba(99,102,241,0.2); border-radius:8px; padding:0.3rem 0.7rem; color:#a5b4fc;">5. 8-Model Classification</span>
+            <i class="fas fa-arrow-right" style="color:#64748b;"></i>
+            <span style="background:rgba(16,185,129,0.2); border-radius:8px; padding:0.3rem 0.7rem; color:#6ee7b7;">6. Ensemble Result</span>
+        </div>
+    </div>
+</div>
+
+<!-- Numerical Models Table -->
+<div class="glass-card p-4 mb-4 animate-fade-up delay-2">
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <div style="width:44px; height:44px; background:linear-gradient(135deg,#10b981,#34d399); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;">📊</div>
+        <div>
+            <h2 style="color:#6ee7b7; font-size:1.4rem; font-weight:700; margin:0;">Numerical Prediction Modules</h2>
+            <p style="color:#64748b; font-size:0.88rem; margin:0;">2 clinical ML modules with ensemble voting</p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Algorithm</th>
+                    <th>Accuracy</th>
+                    <th>Dataset Size</th>
+                    <th>Features</th>
+                    <th>Target</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span style="color:#fca5a5; font-weight:600;"><i class="fas fa-dna me-1"></i>Cancer Risk</span></td>
+                    <td style="color:#94a3b8;">Ensemble ML</td>
+                    <td><span style="color:#fca5a5; font-weight:700;">85%</span></td>
+                    <td style="color:#94a3b8;">50,000 samples</td>
+                    <td style="color:#94a3b8;">Demographics + risk</td>
+                    <td style="color:#94a3b8;">Risk score</td>
+                </tr>
+                <tr>
+                    <td><span style="color:#67e8f9; font-weight:600;"><i class="fas fa-calculator me-1"></i>TI-RADS</span></td>
+                    <td style="color:#94a3b8;">Rule-based scoring</td>
+                    <td><span style="color:#67e8f9; font-weight:700;">ACR</span></td>
+                    <td style="color:#94a3b8;">ACR guidelines</td>
+                    <td style="color:#94a3b8;">5 ultrasound features</td>
+                    <td style="color:#94a3b8;">TR1–TR5 category</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Feature Importance -->
+<div class="glass-card p-4 mb-4 animate-fade-up delay-3">
+    <h2 style="color:#a5b4fc; font-size:1.4rem; font-weight:700; margin-bottom:1.5rem;">📋 Top Features by Module</h2>
+    <div class="row g-3">
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #10b981;">
-                <h3 style="color: #10b981; margin-bottom: 1rem;">Algorithm</h3>
-                <div style="color: #64748b; line-height: 1.8;">
-                    <p><strong>Model:</strong> CatBoost Classifier</p>
-                    <p><strong>Type:</strong> Gradient Boosting</p>
-                    <p><strong>Features:</strong> 53 engineered</p>
-                    <p><strong>Original Features:</strong> 15</p>
-                    <p><strong>Engineered:</strong> 38 new features</p>
-                    <p><strong>Classes:</strong> Benign, Malignant</p>
+        <div class="col-md-6">
+            <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:12px; padding:1.25rem;">
+                <h5 style="color:#6ee7b7; font-weight:700; margin-bottom:0.75rem; font-size:0.95rem;">
+                    <i class="fas fa-heartbeat me-2"></i>Thyroid Disease — Top Features
+                </h5>
+                <div style="color:#94a3b8; font-size:0.85rem;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#6ee7b7; border-radius:50%; flex-shrink:0;"></div>
+                        <span>TSH level</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#6ee7b7; border-radius:50%; flex-shrink:0;"></div>
+                        <span>T3 / T4 hormone levels</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#6ee7b7; border-radius:50%; flex-shrink:0;"></div>
+                        <span>Age and gender</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#6ee7b7; border-radius:50%; flex-shrink:0;"></div>
+                        <span>Goitre presence</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:8px; height:8px; background:#6ee7b7; border-radius:50%; flex-shrink:0;"></div>
+                        <span>On thyroxine / antithyroid meds</span>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #667eea;">
-                <h3 style="color: #667eea; margin-bottom: 1rem;">Performance</h3>
-                <div style="color: #64748b; line-height: 1.8;">
-                    <p><strong>Accuracy:</strong> 82.09%</p>
-                    <p><strong>Precision:</strong> High</p>
-                    <p><strong>Recall:</strong> Balanced</p>
-                    <p><strong>F1 Score:</strong> 0.82</p>
-                    <p><strong>ROC-AUC:</strong> 0.70</p>
-                    <p><strong>Test Set:</strong> 20% holdout</p>
+        <div class="col-md-6">
+            <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:12px; padding:1.25rem;">
+                <h5 style="color:#fca5a5; font-weight:700; margin-bottom:0.75rem; font-size:0.95rem;">
+                    <i class="fas fa-dna me-2"></i>Cancer Risk — Top Features
+                </h5>
+                <div style="color:#94a3b8; font-size:0.85rem;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#fca5a5; border-radius:50%; flex-shrink:0;"></div>
+                        <span>Family history of thyroid cancer</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#fca5a5; border-radius:50%; flex-shrink:0;"></div>
+                        <span>Radiation exposure history</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#fca5a5; border-radius:50%; flex-shrink:0;"></div>
+                        <span>Nodule size</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#fca5a5; border-radius:50%; flex-shrink:0;"></div>
+                        <span>Age and gender</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:8px; height:8px; background:#fca5a5; border-radius:50%; flex-shrink:0;"></div>
+                        <span>Iodine deficiency, obesity, diabetes</span>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #ef4444;">
-                <h3 style="color: #ef4444; margin-bottom: 1rem;">Data Processing</h3>
-                <div style="color: #64748b; line-height: 1.8;">
-                    <p><strong>Balancing:</strong> BorderlineSMOTE</p>
-                    <p><strong>Scaling:</strong> MinMaxScaler</p>
-                    <p><strong>Encoding:</strong> LabelEncoder</p>
-                    <p><strong>Missing Values:</strong> Handled</p>
-                    <p><strong>Outliers:</strong> Managed</p>
-                    <p><strong>Cross-Validation:</strong> 5-fold</p>
+        <div class="col-md-6">
+            <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:1.25rem;">
+                <h5 style="color:#a5b4fc; font-weight:700; margin-bottom:0.75rem; font-size:0.95rem;">
+                    <i class="fas fa-microscope me-2"></i>Image Model — Architecture Notes
+                </h5>
+                <div style="color:#94a3b8; font-size:0.85rem;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#a5b4fc; border-radius:50%; flex-shrink:0;"></div>
+                        <span>DenseNet121: <code style="color:#a5b4fc;">classifier = Linear(1024, 2)</code></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#a5b4fc; border-radius:50%; flex-shrink:0;"></div>
+                        <span>ResNet50/152: <code style="color:#a5b4fc;">fc = Linear(in, 2)</code></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#a5b4fc; border-radius:50%; flex-shrink:0;"></div>
+                        <span>VGG16: <code style="color:#a5b4fc;">classifier[6] = Linear(4096, 2)</code></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width:8px; height:8px; background:#a5b4fc; border-radius:50%; flex-shrink:0;"></div>
+                        <span>InceptionV3: <code style="color:#a5b4fc;">fc + AuxLogits.fc</code></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:8px; height:8px; background:#a5b4fc; border-radius:50%; flex-shrink:0;"></div>
+                        <span>All trained on TN5000 · CLAHE preprocessing</span>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
+</div>
 
-    <!-- Feature Categories -->
-    <div style="margin-bottom: 3rem;">
-        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">📋 Clinical Features</h2>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0;">
-                <h4 style="color: #667eea; margin-bottom: 1rem;">👤 Demographics</h4>
-                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
-                    <li>Age</li>
-                    <li>Gender</li>
-                    <li>Country</li>
-                    <li>Ethnicity</li>
-                </ul>
-            </div>
-
-            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0;">
-                <h4 style="color: #10b981; margin-bottom: 1rem;">🏥 Medical History</h4>
-                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
-                    <li>Family History</li>
-                    <li>Radiation Exposure</li>
-                    <li>Iodine Deficiency</li>
-                    <li>Smoking</li>
-                    <li>Obesity</li>
-                    <li>Diabetes</li>
-                </ul>
-            </div>
-
-            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e2e8f0;">
-                <h4 style="color: #f59e0b; margin-bottom: 1rem;">🔬 Lab Results</h4>
-                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
-                    <li>TSH Level</li>
-                    <li>T3 Level</li>
-                    <li>T4 Level</li>
-                    <li>Nodule Size</li>
-                    <li>Cancer Risk</li>
-                </ul>
-            </div>
-
-            <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #ef4444;">
-                <h4 style="color: #ef4444; margin-bottom: 1rem;">⚙️ Engineered</h4>
-                <ul style="color: #64748b; line-height: 1.8; padding-left: 1.5rem;">
-                    <li>Age Groups</li>
-                    <li>Hormone Ratios</li>
-                    <li>Risk Interactions</li>
-                    <li>Combined Features</li>
-                </ul>
+<!-- Model Metadata -->
+{% if metadata %}
+<div class="glass-card p-4 mb-4 animate-fade-up delay-3">
+    <h2 style="color:#a5b4fc; font-size:1.4rem; font-weight:700; margin-bottom:1rem;">📊 Saved Model Metadata</h2>
+    <div class="row g-2">
+        {% for key, value in metadata.items() %}
+        <div class="col-md-4 col-sm-6">
+            <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.75rem 1rem;">
+                <div style="color:#64748b; font-size:0.78rem; margin-bottom:0.2rem; text-transform:uppercase; letter-spacing:0.05em;">{{ key }}</div>
+                <div style="color:#e2e8f0; font-weight:600; font-size:0.9rem;">{{ value }}</div>
             </div>
         </div>
+        {% endfor %}
     </div>
+</div>
+{% endif %}
 
-    <!-- Model Metadata -->
-    {% if metadata %}
-    <div style="background: #f8fafc; padding: 2rem; border-radius: 15px; border-left: 5px solid #667eea; margin-bottom: 3rem;">
-        <h2 style="color: #667eea; margin-bottom: 1.5rem; font-size: 1.8rem;">📊 Saved Model Metadata</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-            {% for key, value in metadata.items() %}
-            <div style="background: white; padding: 1rem; border-radius: 8px;">
-                <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.25rem;">{{ key }}</div>
-                <div style="color: #334155; font-weight: 600;">{{ value }}</div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- System Capabilities -->
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 3rem;">
-        <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">✨ System Capabilities</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-            <div>
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
-                <h4 style="margin-bottom: 0.5rem;">Real-Time</h4>
-                <p style="opacity: 0.9; font-size: 0.9rem;">Instant predictions in under 1 second</p>
-            </div>
-            <div>
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
-                <h4 style="margin-bottom: 0.5rem;">High Accuracy</h4>
-                <p style="opacity: 0.9; font-size: 0.9rem;">99% image, 82% clinical accuracy</p>
-            </div>
-            <div>
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
-                <h4 style="margin-bottom: 0.5rem;">Secure</h4>
-                <p style="opacity: 0.9; font-size: 0.9rem;">Protected with authentication</p>
-            </div>
-            <div>
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📱</div>
-                <h4 style="margin-bottom: 0.5rem;">Responsive</h4>
-                <p style="opacity: 0.9; font-size: 0.9rem;">Works on all devices</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div style="text-align: center;">
-        <a href="/predict" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; margin: 0.5rem; transition: transform 0.3s;">
-            🔮 Try Prediction
+<!-- Quick Actions -->
+<div class="glass-card p-4 text-center animate-fade-up delay-4">
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="/predict-image" class="btn btn-glow">
+            <i class="fas fa-microscope me-2"></i>Try Image Analysis
         </a>
-        <a href="/dashboard" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; margin: 0.5rem; transition: transform 0.3s;">
-            📊 View Dashboard
+        <a href="/dashboard" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#94a3b8; border-radius:12px; padding:0.75rem 1.5rem; font-weight:600; text-decoration:none;" class="btn">
+            <i class="fas fa-chart-line me-2"></i>Dashboard
         </a>
     </div>
 </div>
 
-<style>
-    a:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-</style>
 {% endblock %}

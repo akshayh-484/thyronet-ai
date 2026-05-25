@@ -4,121 +4,500 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>{% block title %}Thyroid Cancer Prediction System{% endblock %}</title>
+    <title>{% block title %}ThyroNet — AI Thyroid Analysis{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --dark2: #1e293b;
+            --dark3: #334155;
+            --glass: rgba(255,255,255,0.07);
+            --glass-border: rgba(255,255,255,0.12);
         }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        /* ══ NUCLEAR INPUT FIX — typed text visible everywhere ══ */
+        input, textarea, select,
+        .form-control, .form-select, .form-select-sm, .form-control-sm {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: rgba(255,255,255,0.3) !important;
+            -webkit-text-fill-color: #f8fafc !important;
+        }
+        input::placeholder, textarea::placeholder,
+        .form-control::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
+        input:focus, textarea:focus, select:focus,
+        .form-control:focus, .form-select:focus {
+            background-color: #243447 !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
+            -webkit-text-fill-color: #f8fafc !important;
+            caret-color: #f8fafc;
+        }
+        select option { background: #1e293b !important; color: #f8fafc !important; }
+        /* Force all small/helper text to be visible */
+        small, .text-muted, .form-text,
+        label span.text-muted, .fw-normal.text-muted {
+            color: #94a3b8 !important;
+            opacity: 1 !important;
+        }
+        /* Force label unit text visible */
+        label .text-muted { color: #94a3b8 !important; }
+        /* TI-RADS and disease detection helper text */
+        .card-body small, .mb-3 small, .form-label + small { color: #94a3b8 !important; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
             min-height: 100vh;
+            color: #e2e8f0;
+            overflow-x: hidden;
         }
 
+        /* ── Animated background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(99,102,241,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 60% at 50% 50%, rgba(6,182,212,0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float linear infinite;
+            opacity: 0;
+        }
+        @keyframes float {
+            0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10%  { opacity: 0.6; }
+            90%  { opacity: 0.3; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+
+        /* ── Navbar ── */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(15,23,42,0.85) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(99,102,241,0.2);
+            padding: 0.75rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        .navbar-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white !important;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
+            gap: 0.5rem;
             text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
         }
 
-        .nav-links a:hover, .nav-links a.active {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: 0 0 20px rgba(99,102,241,0.4);
+        }
+
+        .brand-text span {
+            background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-toggler {
+            border: 1px solid rgba(99,102,241,0.4);
+            padding: 0.4rem 0.6rem;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28165,180,252,0.9%29' stroke-linecap='round' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(226,232,240,0.8) !important;
+            font-weight: 500;
+            font-size: 0.82rem;
+            padding: 0.4rem 0.7rem !important;
+            border-radius: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+        }
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            background: rgba(99,102,241,0.2);
+        }
+        .navbar-nav .nav-link.active {
+            color: #a5b4fc !important;
+            background: rgba(99,102,241,0.25);
+        }
+
+        .nav-user {
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: 20px;
+            padding: 0.3rem 0.9rem;
+            font-size: 0.82rem;
+            color: #a5b4fc !important;
+            font-weight: 600;
+        }
+        .nav-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            color: white !important;
+            border-radius: 8px;
+            padding: 0.4rem 0.9rem !important;
+            font-weight: 600;
+        }
+
+        /* ── Page wrapper ── */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: calc(100vh - 70px);
         }
 
         .container {
             max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
         }
 
-        .footer {
-            background: rgba(0, 0, 0, 0.8);
+        /* ── Glass cards ── */
+        .glass-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(99,102,241,0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(99,102,241,0.15);
+        }
+
+        /* ── Glow button ── */
+        .btn-glow {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.5);
+            color: white;
+        }
+        .btn-glow:hover::before { opacity: 1; }
+
+        /* ── Alerts ── */
+        .alert { border-radius: 12px; border: none; }
+        .alert-success { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+        .alert-danger  { background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        .alert-warning { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+        .alert-info    { background: rgba(6,182,212,0.15);  color: #67e8f9; border: 1px solid rgba(6,182,212,0.3); }
+
+        /* ── Form controls ── */
+        .form-control, .form-select {
+            background: #1e293b !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            color: #f1f5f9 !important;
+            border-radius: 10px;
+            padding: 0.7rem 1rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            background: #243447 !important;
+            border-color: rgba(99,102,241,0.8) !important;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2) !important;
+            color: #ffffff !important;
+        }
+        .form-control::placeholder { color: #94a3b8; }
+        .form-select option { background: #1e293b; color: #f1f5f9; }
+        .form-label { color: #cbd5e1; font-weight: 500; font-size: 0.88rem; margin-bottom: 0.4rem; }
+
+        /* ── Footer ── */
+        .footer {
+            background: rgba(0,0,0,0.4);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: rgba(148,163,184,0.8);
             text-align: center;
             padding: 2rem;
             margin-top: 4rem;
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 1;
+        }
+        .footer p { margin: 0.3rem 0; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.7); }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp {
+            from { opacity:0; transform:translateY(30px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        @keyframes fadeInLeft {
+            from { opacity:0; transform:translateX(-30px); }
+            to   { opacity:1; transform:translateX(0); }
+        }
+        @keyframes pulse-glow {
+            0%,100% { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+            50%      { box-shadow: 0 0 40px rgba(99,102,241,0.6); }
+        }
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
         }
 
-        .footer p {
-            margin: 0.5rem 0;
+        .animate-fade-up   { animation: fadeInUp 0.6s ease both; }
+        .animate-fade-left { animation: fadeInLeft 0.6s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        /* ── Badge ── */
+        .badge-glow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Progress bar ── */
+        .progress {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        /* ── Table ── */
+        .table { color: #e2e8f0; }
+        .table thead th { color: #94a3b8; border-color: rgba(255,255,255,0.08); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .table td { border-color: rgba(255,255,255,0.06); vertical-align: middle; }
+        .table-light { background: rgba(255,255,255,0.05) !important; color: #94a3b8 !important; }
+        .table-light th { background: rgba(255,255,255,0.05) !important; color: #94a3b8 !important; }
+
+        /* ── Divider ── */
+        hr { border-color: rgba(255,255,255,0.08); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
         }
 
         {% block extra_css %}{% endblock %}
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">🏥 ThyroNet: Thyroid Nodule Analysis</div>
-            <ul class="nav-links">
-                <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>Home</a></li>
-                <li><a href="/predict" {% if request.path == '/predict' %}class="active"{% endif %}>Predict</a></li>
-                <li><a href="/model-info" {% if request.path == '/model-info' %}class="active"{% endif %}>Model Info</a></li>
-                <li><a href="/dashboard" {% if request.path == '/dashboard' %}class="active"{% endif %}>Dashboard</a></li>
-                <li><a href="/about" {% if request.path == '/about' %}class="active"{% endif %}>About</a></li>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand" href="/">
+            <div class="brand-icon">🧬</div>
+            <div class="brand-text">Thyro<span>Net</span></div>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                        <i class="fas fa-home me-1"></i>Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/predict-image' %}active{% endif %}" href="/predict-image">
+                        <i class="fas fa-microscope me-1"></i>Image AI
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/cancer-risk-page' %}active{% endif %}" href="/cancer-risk-page">
+                        <i class="fas fa-dna me-1"></i>Cancer Risk
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/tirads-page' %}active{% endif %}" href="/tirads-page">
+                        <i class="fas fa-calculator me-1"></i>TI-RADS
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/predict-thyroid-disease-page' %}active{% endif %}" href="/predict-thyroid-disease-page">
+                        <i class="fas fa-heartbeat me-1"></i>Disease
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">
+                        <i class="fas fa-chart-line me-1"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">
+                        <i class="fas fa-info-circle me-1"></i>About
+                    </a>
+                </li>
                 {% if username %}
-                <li><span style="color: #667eea; font-weight: 600; padding: 0.5rem 1rem;">👤 {{ username }}</span></li>
-                <li><a href="/logout" style="background: #e74c3c; color: white; padding: 0.5rem 1rem; border-radius: 5px;">Logout</a></li>
+                <li class="nav-item ms-2">
+                    <span class="nav-link nav-user">
+                        <i class="fas fa-user-md me-1"></i>{{ username }}
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-logout" href="/logout">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </a>
+                </li>
                 {% endif %}
             </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
+<div class="page-wrapper">
     <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'warning' }} alert-dismissible fade show animate-fade-up mb-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </div>
+</div>
 
-    <footer class="footer">
-        <p>🏥 ThyroNet: Thyroid Nodule Analysis - Advanced Thyroid Cancer Prediction System</p>
-        <p>Powered by Machine Learning & Deep Learning | Competition-Level Accuracy</p>
-        <p>&copy; 2024 Medical AI Research | For Research & Educational Purposes Only</p>
-    </footer>
+<footer class="footer">
+    <p>🧬 <strong style="color:#a5b4fc;">ThyroNet</strong> — AI-Powered Thyroid Cancer Analysis System</p>
+    <p>Deep Learning · Ensemble ML · ACR TI-RADS · 3 Prediction Modules</p>
+    <p style="color:rgba(148,163,184,0.5);">For Research & Educational Purposes Only · Always consult a qualified clinician</p>
+</footer>
 
-    {% block extra_js %}{% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Generate floating particles
+(function() {
+    const container = document.getElementById('particles');
+    const colors = ['rgba(99,102,241,0.4)','rgba(139,92,246,0.3)','rgba(6,182,212,0.3)','rgba(16,185,129,0.2)'];
+    for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 4 + 2;
+        p.style.cssText = `
+            width:${size}px; height:${size}px;
+            left:${Math.random()*100}%;
+            background:${colors[Math.floor(Math.random()*colors.length)]};
+            animation-duration:${Math.random()*20+15}s;
+            animation-delay:${Math.random()*15}s;
+        `;
+        container.appendChild(p);
+    }
+})();
+
+// Intersection observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.scroll-reveal').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+});
+</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

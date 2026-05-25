@@ -1,14 +1,31 @@
-flask==3.0.0
-pandas==2.1.4
-numpy==1.26.2
-scikit-learn==1.3.2
-imbalanced-learn==0.11.0
-xgboost==2.0.3
-tensorflow==2.15.0
-torch==2.1.2
-torchvision==0.16.2
-pillow==10.1.0
-matplotlib==3.8.2
-seaborn==0.13.0
-werkzeug==3.0.1
-gunicorn==21.2.0
+# Flask Web Framework
+flask>=2.0.0
+flask-cors>=3.0.10
+werkzeug>=2.0.0
+
+# Machine Learning - Numerical Models
+scikit-learn>=1.0.0
+xgboost>=1.5.0
+catboost>=1.0.0
+imbalanced-learn>=0.9.0
+
+# Deep Learning - Image Models
+tensorflow>=2.10.0
+ultralytics>=8.0.0
+torch>=1.12.0
+torchvision>=0.13.0
+
+# Image Processing
+opencv-python>=4.5.0
+pillow>=9.0.0
+
+# Data Processing
+numpy>=1.21.0
+pandas>=1.3.0
+
+# Visualization
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# Utilities
+python-dotenv>=0.19.0

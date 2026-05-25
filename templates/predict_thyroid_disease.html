@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+{% block title %}Thyroid Disease Detection — ThyroNet{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm" style="background:linear-gradient(135deg,#1a6b4a,#2d9e6b);">
+        <div class="card-body text-white py-4">
+          <div class="d-flex align-items-center">
+            <div class="me-3" style="font-size:2.5rem;">🩺</div>
+            <div>
+              <h2 class="mb-1 fw-bold">Thyroid Disease Detection</h2>
+              <p class="mb-0 opacity-75">Detects Hypothyroidism, Hyperthyroidism, or Normal thyroid function</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if model_info %}
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 bg-light">
+        <div class="card-body py-2">
+          <div class="row text-center g-2">
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block">Best Model</small>
+              <strong class="text-success">{{ model_info.best_model }}</strong>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block">Accuracy</small>
+              <strong class="text-success">{{ "%.1f"|format(model_info.best_accuracy) }}%</strong>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block">Ensemble AUC</small>
+              <strong class="text-success">{{ "%.1f"|format(model_info.voting_auc) }}%</strong>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block">Training Patients</small>
+              <strong class="text-success">{{ model_info.dataset_size }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm h-100" style="background:#0f172a;">
+        <div class="card-header border-bottom" style="background:rgba(255,255,255,0.06);">
+          <h5 class="mb-0 fw-semibold" style="color:#e2e8f0;">🔬 Patient Hormone Levels</h5>
+        </div>
+        <div class="card-body">
+          <form id="thyroidDiseaseForm">
+
+            <!-- IMPORTANCE BANNER -->
+            <div class="alert alert-success border-0 py-2 mb-3" style="font-size:0.85rem;">
+              <strong>FTI (24%) · T3 (22%) · TSH (22%) · TT4 (20%)</strong> carry 89% of prediction power.
+              Enter at least <strong>TSH</strong>. Age, Sex, Pregnant are optional.
+            </div>
+
+            <!-- FTI — 24.3% MOST IMPORTANT -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                FTI <span style="color:#94a3b8;font-weight:normal;">(index)</span>
+                <span class="badge bg-success ms-1" style="font-size:0.7rem;">24.3% importance</span>
+              </label>
+              <input type="number" step="0.1" class="form-control" id="FTI" name="FTI"
+                     placeholder="Normal: 65–130">
+              <small style="color:#94a3b8;">Free Thyroxine Index</small>
+            </div>
+
+            <!-- T3 — 22.5% -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                T3 <span style="color:#94a3b8;font-weight:normal;">(nmol/L)</span>
+                <span class="badge bg-success ms-1" style="font-size:0.7rem;">22.5% importance</span>
+              </label>
+              <input type="number" step="0.01" class="form-control" id="T3" name="T3"
+                     placeholder="Normal: 1.2–2.8">
+              <small style="color:#94a3b8;">Triiodothyronine</small>
+            </div>
+
+            <!-- TSH — 22.3% REQUIRED -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                TSH <span style="color:#94a3b8;font-weight:normal;">(mIU/L)</span>
+                <span class="badge bg-success ms-1" style="font-size:0.7rem;">22.3% importance</span>
+                <span class="text-danger ms-1">*</span>
+              </label>
+              <input type="number" step="0.01" class="form-control" id="TSH" name="TSH"
+                     placeholder="Normal: 0.4–4.0" required>
+              <small style="color:#94a3b8;">Thyroid Stimulating Hormone — only required field</small>
+            </div>
+
+            <!-- TT4 — 19.6% -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                TT4 <span style="color:#94a3b8;font-weight:normal;">(nmol/L)</span>
+                <span class="badge bg-success ms-1" style="font-size:0.7rem;">19.6% importance</span>
+              </label>
+              <input type="number" step="0.1" class="form-control" id="TT4" name="TT4"
+                     placeholder="Normal: 60–150">
+              <small style="color:#94a3b8;">Total Thyroxine</small>
+            </div>
+
+            <!-- T4U — 7.4% -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                T4U <span style="color:#94a3b8;font-weight:normal;">(ratio)</span>
+                <span class="badge bg-secondary ms-1" style="font-size:0.7rem;">7.4% importance</span>
+              </label>
+              <input type="number" step="0.01" class="form-control" id="T4U" name="T4U"
+                     placeholder="Normal: 0.7–1.1">
+              <small style="color:#94a3b8;">Thyroxine Utilization Rate</small>
+            </div>
+
+            <!-- OPTIONAL: Age, Sex, Pregnant — low importance -->
+            <details class="mb-4">
+              <summary style="color:#64748b; font-size:0.88rem; font-weight:600; cursor:pointer; padding:0.5rem 0; border-top:1px solid rgba(255,255,255,0.08);">
+                ⚙️ Optional Fields
+                <span style="color:#475569; font-weight:400;">(Age 2.7% · Sex 0.5% · Pregnant 0.7% — defaults applied)</span>
+              </summary>
+              <div class="row g-3 mt-2">
+                <div class="col-6">
+                  <label class="form-label small">Age</label>
+                  <input type="number" class="form-control form-control-sm" id="age" name="age"
+                         min="1" max="120" placeholder="e.g. 45">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small">Sex</label>
+                  <select class="form-select form-select-sm" id="sex" name="sex">
+                    <option value="F">Female</option>
+                    <option value="M">Male</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label small">Pregnant</label>
+                  <select class="form-select form-select-sm" id="pregnant" name="pregnant">
+                    <option value="f">No</option>
+                    <option value="t">Yes</option>
+                  </select>
+                </div>
+              </div>
+            </details>
+
+            <div class="d-grid gap-2 mt-2">
+              <button type="submit" class="btn btn-success btn-lg fw-semibold" id="predictBtn">
+                <span id="btnText">🔍 Analyze Thyroid Function</span>
+                <span id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+              </button>
+              <button type="button" class="btn btn-outline-secondary" onclick="fillExample('hypo')">
+                Load Hypothyroid Example
+              </button>
+              <button type="button" class="btn btn-outline-secondary" onclick="fillExample('hyper')">
+                Load Hyperthyroid Example
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="col-lg-7">
+      <div id="resultsPlaceholder" class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center py-5">
+          <div style="font-size:4rem; opacity:0.3;">🩺</div>
+          <h5 class="text-muted mt-3">Results will appear here</h5>
+          <p class="text-muted small">Enter TSH (required) and any other available values, then click Analyze</p>
+        </div>
+      </div>
+
+      <div id="resultsPanel" class="d-none">
+        <div class="card border-0 shadow-sm mb-3" id="mainResultCard">
+          <div class="card-body text-center py-4">
+            <div id="resultIcon" style="font-size:3.5rem;" class="mb-2"></div>
+            <h3 id="resultLabel" class="fw-bold mb-1"></h3>
+            <p id="resultSubtitle" class="text-muted mb-3"></p>
+            <div class="d-inline-block px-4 py-2 rounded-pill fw-semibold" id="confidenceBadge"></div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3">
+          <div class="card-header border-bottom" style="background:rgba(255,255,255,0.06);">
+            <h6 class="mb-0 fw-semibold" style="color:#e2e8f0;">📊 Class Probabilities</h6>
+          </div>
+          <div class="card-body" id="probBars"></div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3">
+          <div class="card-header border-bottom d-flex justify-content-between align-items-center" style="background:rgba(255,255,255,0.06);">
+            <h6 class="mb-0 fw-semibold" style="color:#e2e8f0;">🤖 Model Votes</h6>
+            <span class="badge bg-success" id="agreementBadge"></span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm mb-0">
+                <thead class="table-light">
+                  <tr><th>Model</th><th>Prediction</th><th>Confidence</th></tr>
+                </thead>
+                <tbody id="modelVotesTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-warning border-0 shadow-sm">
+          <small><strong>⚠️ Clinical Note:</strong> For screening assistance only. Always consult a qualified clinician.</small>
+        </div>
+      </div>
+
+      <div id="errorPanel" class="d-none">
+        <div class="alert alert-danger shadow-sm">
+          <strong>Error:</strong> <span id="errorMsg"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CLASS_CONFIG = {
+  'Negative':     { icon: '✅', color: '#198754', bg: '#d1e7dd', label: 'Normal Thyroid Function',   subtitle: 'No thyroid disorder detected' },
+  'Hypothyroid':  { icon: '🔵', color: '#0d6efd', bg: '#cfe2ff', label: 'Hypothyroidism Detected',  subtitle: 'Underactive thyroid — TSH typically elevated' },
+  'Hyperthyroid': { icon: '🔴', color: '#dc3545', bg: '#f8d7da', label: 'Hyperthyroidism Detected', subtitle: 'Overactive thyroid — TSH typically suppressed' },
+};
+
+document.getElementById('thyroidDiseaseForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('predictBtn');
+  const spinner = document.getElementById('btnSpinner');
+  const btnText = document.getElementById('btnText');
+  btn.disabled = true;
+  spinner.classList.remove('d-none');
+  btnText.textContent = 'Analyzing...';
+
+  const features = {
+    age:      document.getElementById('age').value || '50',
+    sex:      document.getElementById('sex').value || 'F',
+    pregnant: document.getElementById('pregnant').value || 'f',
+    TSH:      document.getElementById('TSH').value || null,
+    T3:       document.getElementById('T3').value  || null,
+    TT4:      document.getElementById('TT4').value || null,
+    T4U:      document.getElementById('T4U').value || null,
+    FTI:      document.getElementById('FTI').value || null,
+  };
+
+  try {
+    const resp = await fetch('/predict-thyroid-disease', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({features})
+    });
+    const data = await resp.json();
+    if (data.success) showResults(data);
+    else showError(data.error || 'Prediction failed');
+  } catch (err) {
+    showError('Network error: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    spinner.classList.add('d-none');
+    btnText.textContent = '🔍 Analyze Thyroid Function';
+  }
+});
+
+function showResults(data) {
+  document.getElementById('resultsPlaceholder').classList.add('d-none');
+  document.getElementById('errorPanel').classList.add('d-none');
+  document.getElementById('resultsPanel').classList.remove('d-none');
+
+  const cfg = CLASS_CONFIG[data.prediction] || CLASS_CONFIG['Negative'];
+  document.getElementById('resultIcon').textContent = cfg.icon;
+  document.getElementById('resultLabel').textContent = cfg.label;
+  document.getElementById('resultLabel').style.color = cfg.color;
+  document.getElementById('resultSubtitle').textContent = cfg.subtitle;
+  document.getElementById('mainResultCard').style.borderLeft = '5px solid ' + cfg.color;
+
+  const badge = document.getElementById('confidenceBadge');
+  badge.textContent = 'Confidence: ' + data.confidence + '%';
+  badge.style.background = cfg.bg;
+  badge.style.color = cfg.color;
+
+  const probDiv = document.getElementById('probBars');
+  probDiv.innerHTML = '';
+  ['Negative','Hypothyroid','Hyperthyroid'].forEach(cls => {
+    const pct = data.probabilities[cls] || 0;
+    const c = CLASS_CONFIG[cls];
+    probDiv.innerHTML += '<div class="mb-2"><div class="d-flex justify-content-between mb-1"><span class="small fw-semibold">' + c.icon + ' ' + cls + '</span><span class="small fw-bold" style="color:' + c.color + '">' + pct.toFixed(1) + '%</span></div><div class="progress" style="height:10px;"><div class="progress-bar" style="width:' + pct + '%;background:' + c.color + ';" role="progressbar"></div></div></div>';
+  });
+
+  const tbody = document.getElementById('modelVotesTable');
+  tbody.innerHTML = '';
+  if (data.individual_predictions) {
+    Object.entries(data.individual_predictions).forEach(([model, info]) => {
+      const c = CLASS_CONFIG[info.prediction] || {};
+      tbody.innerHTML += '<tr><td class="small">' + model + '</td><td><span class="badge" style="background:' + (c.color||'#6c757d') + '">' + info.prediction + '</span></td><td class="small">' + info.confidence.toFixed(1) + '%</td></tr>';
+    });
+  }
+  document.getElementById('agreementBadge').textContent = data.model_agreement + '% agreement';
+}
+
+function showError(msg) {
+  document.getElementById('resultsPlaceholder').classList.add('d-none');
+  document.getElementById('resultsPanel').classList.add('d-none');
+  document.getElementById('errorPanel').classList.remove('d-none');
+  document.getElementById('errorMsg').textContent = msg;
+}
+
+function fillExample(type) {
+  if (type === 'hypo') {
+    document.getElementById('TSH').value = 18.5;
+    document.getElementById('T3').value = 0.8;
+    document.getElementById('TT4').value = 45;
+    document.getElementById('T4U').value = 0.9;
+    document.getElementById('FTI').value = 50;
+    document.getElementById('age').value = 52;
+    document.getElementById('sex').value = 'F';
+  } else {
+    document.getElementById('TSH').value = 0.05;
+    document.getElementById('T3').value = 4.8;
+    document.getElementById('TT4').value = 195;
+    document.getElementById('T4U').value = 1.4;
+    document.getElementById('FTI').value = 180;
+    document.getElementById('age').value = 38;
+    document.getElementById('sex').value = 'F';
+  }
+}
+</script>
+{% endblock %}

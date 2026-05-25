@@ -1,60 +1,69 @@
 """
-PROFESSIONAL MEDICAL CLASSIFICATION WEB APPLICATION
-Multi-page Flask app with advanced features and dashboard
+THYRONET: THYROID NODULE ANALYSIS
+Clinical Data Prediction using Ensemble Machine Learning
 """
 
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, session, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
 from flask_cors import CORS
 import os
 import json
-from werkzeug.utils import secure_filename
-from utils.ensemble_image_predictor import EnsembleImagePredictor
-from utils.numerical_predictor import NumericalPredictor
-from utils.ensemble_predictor import EnsemblePredictor
-from PIL import Image
-import io
-import pandas as pd
+from utils.advanced_image_predictor import AdvancedImagePredictor
+from utils.super_ensemble_predictor import SuperEnsemblePredictor
+from utils.thyroid_disease_predictor import ThyroidDiseasePredictor
+from utils.tirads_calculator import calculate_tirads, UI_OPTIONS
+from utils.cancer_risk_predictor import CancerRiskPredictor
 from functools import wraps
+import time
+from PIL import Image
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['UPLOAD_FOLDER'] = 'uploads'
+CORS(app)
 app.config['SECRET_KEY'] = 'thyronet-ai-secret-key-2024'
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'bmp', 'tiff'}
+
+# Create upload folder
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Initialize predictors
+
 try:
-    image_predictor = EnsembleImagePredictor(
-        resnet_path='resnet50_best.pth',
-        resnext_path='resnext50_best.pth',
-        densenet_path='densenet121_best.pth',
-        config_path='ensemble_config.pth'
-    )
+    thyroid_disease_predictor = ThyroidDiseasePredictor('models_thyroid_disease')
 except Exception as e:
-    print(f"Warning: Could not load ensemble image predictor: {e}")
-    image_predictor = None
+    print(f"Warning: Could not load thyroid disease predictor: {e}")
+    thyroid_disease_predictor = None
 
 try:
-    numerical_predictor = NumericalPredictor('models')
-except:
-    numerical_predictor = None
+    cancer_risk_predictor = CancerRiskPredictor('models_cancer_risk')
+except Exception as e:
+    print(f"Warning: Could not load cancer risk predictor: {e}")
+    cancer_risk_predictor = None
 
 try:
-    ensemble_predictor = EnsemblePredictor('models')
-except:
-    ensemble_predictor = None
-
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'bmp', 'tiff'}
+    # Load retrained models (no data leakage, TN5000 dataset)
+    print("🚀 Loading Super Ensemble Predictor (models_retrained/)...")
+    image_predictor = SuperEnsemblePredictor(models_dir='models_retrained')
+    print("✅ Super Ensemble Predictor loaded successfully!")
+    predictor_type = 'super_ensemble'
+except Exception as e:
+    print(f"⚠️  Could not load from models_retrained/: {e}")
+    print("Trying legacy modelss/ directory...")
+    try:
+        image_predictor = SuperEnsemblePredictor(models_dir='modelss')
+        print("✅ Loaded from modelss/ (legacy)")
+        predictor_type = 'super_ensemble'
+    except Exception as e2:
+        print(f"❌ Could not load any image predictor: {e2}")
+        image_predictor = None
+        predictor_type = None
 
 # Demo credentials
 DEMO_USERS = {
     'doctor': 'thyronet2024',
     'admin': 'admin123'
 }
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def login_required(f):
     @wraps(f)
@@ -76,7 +85,6 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        
         if username in DEMO_USERS and DEMO_USERS[username] == password:
             session['logged_in'] = True
             session['username'] = username
@@ -85,7 +93,6 @@ def login():
         else:
             flash('Invalid username or password. Please try again.', 'danger')
             return redirect(url_for('login'))
-    
     return render_template('login.html')
 
 @app.route('/logout')
@@ -94,13 +101,14 @@ def logout():
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('login'))
 
-@app.route('/predict')
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/predict-image')
 @login_required
-def predict_page():
-    feature_names = numerical_predictor.get_feature_names() if numerical_predictor else []
-    import time
+def predict_image_page():
     cache_buster = int(time.time())
-    return render_template('predict.html', feature_names=feature_names, v=cache_buster, username=session.get('username'))
+    return render_template('predict_image.html', v=cache_buster, username=session.get('username'))
 
 @app.route('/about')
 @login_required
@@ -110,30 +118,23 @@ def about():
 @app.route('/model-info')
 @login_required
 def model_info():
-    try:
-        with open('models/metadata.json', 'r') as f:
-            metadata = json.load(f)
-    except:
-        metadata = {}
+    metadata = {}
     return render_template('model_info.html', metadata=metadata, username=session.get('username'))
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    try:
-        with open('models/metadata.json', 'r') as f:
-            metadata = json.load(f)
-    except:
-        metadata = {}
+    metadata = {}
     return render_template('dashboard.html', metadata=metadata, username=session.get('username'))
 
-@app.route('/predict-image', methods=['POST'])
-def predict_image():
-    # Allow CORS for testing, but check login for web interface
+@app.route('/predict-image-upload', methods=['POST'])
+@login_required
+def predict_image_upload():
     if not image_predictor:
-        return jsonify({'success': False, 'error': 'Image predictor not available'}), 500
+        return jsonify({'success': False, 'error': 'Image predictor not available. Please ensure model files are in newmod/ directory.'}), 500
     
     try:
+        # Check if file is present
         if 'image' not in request.files:
             return jsonify({'success': False, 'error': 'No image file provided'}), 400
         
@@ -143,103 +144,117 @@ def predict_image():
             return jsonify({'success': False, 'error': 'No file selected'}), 400
         
         if not allowed_file(file.filename):
-            return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+            return jsonify({'success': False, 'error': 'Invalid file type. Allowed: PNG, JPG, JPEG, BMP, TIFF'}), 400
         
-        image_bytes = file.read()
-        image = Image.open(io.BytesIO(image_bytes))
+        # Open and validate image
+        try:
+            image = Image.open(file.stream).convert('RGB')
+        except Exception as e:
+            return jsonify({'success': False, 'error': f'Invalid image file: {str(e)}'}), 400
         
+        # Predict
         result = image_predictor.predict(image)
         
-        if result['success']:
-            return jsonify(result), 200
-        else:
-            return jsonify(result), 500
-            
+        return jsonify(result), 200 if result['success'] else 400
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Prediction error: {str(e)}'}), 500
+
+@app.route('/image-predictor-status', methods=['GET'])
+def image_predictor_status():
+    try:
+        return jsonify({
+            'success': True,
+            'available': image_predictor is not None,
+            'models': {
+                'yolo': 'newmod/yolo_model.pt',
+                'densenet': 'newmod/densenet_model.h5',
+                'mobilenet': 'newmod/mobilenet_model.h5'
+            } if image_predictor else None
+        }), 200
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/predict-numerical', methods=['POST'])
-def predict_numerical():
-    # Allow CORS for testing, but check login for web interface
-    if not numerical_predictor:
-        return jsonify({'success': False, 'error': 'Numerical predictor not available - train models first'}), 500
-    
+# ── Thyroid Disease Detection (Hypo/Hyper/Normal) ─────────────────
+@app.route('/predict-thyroid-disease-page')
+@login_required
+def predict_thyroid_disease_page():
+    cache_buster = int(time.time())
+    info = thyroid_disease_predictor.get_model_info() if thyroid_disease_predictor else {}
+    return render_template('predict_thyroid_disease.html',
+                           model_info=info,
+                           v=cache_buster,
+                           username=session.get('username'))
+
+@app.route('/predict-thyroid-disease', methods=['POST'])
+@login_required
+def predict_thyroid_disease():
+    if not thyroid_disease_predictor:
+        return jsonify({'success': False, 'error': 'Thyroid disease predictor not available'}), 500
     try:
         data = request.get_json()
-        
         if not data or 'features' not in data:
             return jsonify({'success': False, 'error': 'No features provided'}), 400
-        
-        features = data['features']
-        result = numerical_predictor.predict(features)
-        
-        if result['success']:
-            return jsonify(result), 200
-        else:
-            return jsonify(result), 500
-            
+        result = thyroid_disease_predictor.predict(data['features'])
+        result['success'] = True
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/predict-numerical-ensemble', methods=['POST'])
-def predict_numerical_ensemble():
-    # Allow CORS for testing, but check login for web interface
-    if not ensemble_predictor:
-        return jsonify({'success': False, 'error': 'Ensemble predictor not available - train ensemble models first'}), 500
-    
+@app.route('/thyroid-disease-info', methods=['GET'])
+@login_required
+def thyroid_disease_info():
+    try:
+        if thyroid_disease_predictor:
+            return jsonify({'success': True, 'available': True,
+                            'info': thyroid_disease_predictor.get_model_info()}), 200
+        return jsonify({'success': True, 'available': False}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/tirads-page')
+@login_required
+def tirads_page():
+    cache_buster = int(time.time())
+    return render_template('tirads.html',
+                           ui_options=UI_OPTIONS,
+                           v=cache_buster,
+                           username=session.get('username'))
+
+@app.route('/calculate-tirads', methods=['POST'])
+@login_required
+def calculate_tirads_route():
     try:
         data = request.get_json()
-        
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+        result = calculate_tirads(data)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ── Cancer Risk (Benign/Malignant) ────────────────────────────────
+@app.route('/cancer-risk-page')
+@login_required
+def cancer_risk_page():
+    cache_buster = int(time.time())
+    info = cancer_risk_predictor.get_model_info() if cancer_risk_predictor else {}
+    return render_template('cancer_risk.html', model_info=info, ui_options=UI_OPTIONS,
+                           v=cache_buster, username=session.get('username'))
+
+@app.route('/predict-cancer-risk', methods=['POST'])
+@login_required
+def predict_cancer_risk():
+    if not cancer_risk_predictor:
+        return jsonify({'success': False, 'error': 'Cancer risk predictor not available'}), 500
+    try:
+        data = request.get_json()
         if not data or 'features' not in data:
             return jsonify({'success': False, 'error': 'No features provided'}), 400
-        
-        features = data['features']
-        method = data.get('method', 'best')  # best, voting, stacking, weighted, all
-        
-        result = ensemble_predictor.predict(features, method=method)
-        
-        if result['success']:
-            return jsonify(result), 200
-        else:
-            return jsonify(result), 500
-            
+        result = cancer_risk_predictor.predict(data['features'])
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/get-features', methods=['GET'])
-def get_features():
-    if not numerical_predictor:
-        return jsonify({'success': False, 'error': 'Predictor not available'}), 500
-    
-    try:
-        feature_names = numerical_predictor.get_feature_names()
-        return jsonify({'success': True, 'features': feature_names}), 200
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/ensemble-status', methods=['GET'])
-def ensemble_status():
-    """Check if ensemble models are available"""
-    try:
-        if ensemble_predictor:
-            info = ensemble_predictor.get_model_info()
-            return jsonify({
-                'success': True,
-                'available': True,
-                'info': info
-            }), 200
-        else:
-            return jsonify({
-                'success': True,
-                'available': False,
-                'message': 'Ensemble models not trained yet. Run: python train_ensemble.py'
-            }), 200
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.errorhandler(413)
-def too_large(e):
-    return jsonify({'success': False, 'error': 'File too large. Maximum size is 16MB'}), 413
 
 @app.errorhandler(404)
 def not_found(e):

@@ -3,85 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - ThyroNet: Thyroid Nodule Analysis</title>
+    <title>Login — ThyroNet AI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 60% at 15% 20%, rgba(99,102,241,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 85% 80%, rgba(139,92,246,0.14) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 50% 50%, rgba(6,182,212,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        /* Grid lines */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 960px;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.1);
+            animation: card-in 0.7s cubic-bezier(0.4,0,0.2,1) both;
+        }
+        @keyframes card-in {
+            from { opacity:0; transform:translateY(40px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+
+        /* Left panel */
+        .login-left {
+            background: linear-gradient(135deg, rgba(99,102,241,0.25) 0%, rgba(139,92,246,0.2) 50%, rgba(6,182,212,0.1) 100%);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 3.5rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 40% 40%, rgba(99,102,241,0.15), transparent 60%);
+            animation: left-glow 8s ease infinite;
+        }
+        @keyframes left-glow {
+            0%,100% { transform: scale(1) rotate(0deg); }
+            50%      { transform: scale(1.1) rotate(5deg); }
+        }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .brand-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 0 30px rgba(99,102,241,0.5);
+            animation: icon-pulse 3s ease infinite;
+        }
+        @keyframes icon-pulse {
+            0%,100% { box-shadow: 0 0 20px rgba(99,102,241,0.4); }
+            50%      { box-shadow: 0 0 40px rgba(99,102,241,0.7); }
+        }
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+        }
+        .brand-name span {
+            background: linear-gradient(135deg, #a5b4fc, #67e8f9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .left-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .left-sub {
+            color: rgba(148,163,184,0.85);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .feature-list {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            color: rgba(226,232,240,0.85);
+            font-size: 0.88rem;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        .feat-icon {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* Right panel */
+        .login-right {
+            padding: 3.5rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-right h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.4rem;
+        }
+        .login-right .sub {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .form-label {
+            color: #94a3b8;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            background: #1e293b !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            color: #f1f5f9 !important;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            background: #243447 !important;
+            border-color: rgba(99,102,241,0.8) !important;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2) !important;
+            color: #ffffff !important;
+        }
+        .form-control::placeholder { color: #94a3b8 !important; }
+        .input-icon-wrap {
+            position: relative;
+        }
+        .input-icon-wrap .icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #475569;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        .input-icon-wrap .form-control { padding-left: 2.75rem; }
+
+        .btn-login {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-size: 1rem;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.5);
+        }
+        .btn-login:hover::before { opacity: 1; }
+
+        .demo-box {
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
+        }
+        .demo-box .label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6366f1;
+            margin-bottom: 0.5rem;
+        }
+        .demo-cred {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+        .demo-cred strong { color: #a5b4fc; }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+            font-size: 0.88rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .alert-danger  { background: rgba(239,68,68,0.12);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+        .alert-success { background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
+
+        @media (max-width: 768px) {
+            .login-card { grid-template-columns: 1fr; }
+            .login-left { display: none; }
+            .login-right { padding: 2.5rem 2rem; }
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-left">
-                <i class="fas fa-heartbeat"></i>
-                <h2>ThyroNet: Thyroid Nodule Analysis</h2>
-                <p>Advanced Thyroid Cancer Detection System</p>
-                <div class="mt-4">
-                    <p><i class="fas fa-check-circle me-2"></i> 99% Image Accuracy</p>
-                    <p><i class="fas fa-check-circle me-2"></i> 82% Clinical Data Accuracy</p>
-                    <p><i class="fas fa-check-circle me-2"></i> AI-Powered Diagnosis</p>
-                </div>
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <!-- Left -->
+        <div class="login-left">
+            <div class="brand-logo">
+                <div class="brand-icon">🧬</div>
+                <div class="brand-name">Thyro<span>Net</span></div>
             </div>
-            <div class="login-right">
-                <h3>Welcome Back</h3>
-                <p class="text-muted mb-4">Sign in to access the diagnostic system</p>
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                
-                <form method="POST" action="{{ url_for('login') }}">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">
-                            <i class="fas fa-user me-2"></i>Username
-                        </label>
-                        <input type="text" class="form-control" id="username" name="username" 
-                               placeholder="Enter your username" required>
+            <h2 class="left-title">AI-Powered<br>Thyroid Analysis</h2>
+            <p class="left-sub">Comprehensive thyroid cancer detection using deep learning, ensemble ML, and clinical scoring systems.</p>
+            <ul class="feature-list">
+                <li>
+                    <div class="feat-icon" style="background:rgba(99,102,241,0.2);">🔬</div>
+                    Image AI — 87% accuracy, 8 deep learning models
+                </li>
+                <li>
+                    <div class="feat-icon" style="background:rgba(239,68,68,0.2);">🎗️</div>
+                    Cancer Risk — Benign vs Malignant assessment
+                </li>
+                <li>
+                    <div class="feat-icon" style="background:rgba(6,182,212,0.2);">📊</div>
+                    ACR TI-RADS — Clinical scoring standard
+                </li>
+                <li>
+                    <div class="feat-icon" style="background:rgba(16,185,129,0.2);">🩺</div>
+                    Thyroid Disease — 93% accuracy, 9,168 patients
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right -->
+        <div class="login-right">
+            <h3>Welcome Back</h3>
+            <p class="sub">Sign in to access the diagnostic system</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-user icon"></i>
+                        <input type="text" class="form-control" name="username"
+                               placeholder="Enter username" required autocomplete="username">
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="password" class="form-label">
-                            <i class="fas fa-lock me-2"></i>Password
-                        </label>
-                        <input type="password" class="form-control" id="password" name="password" 
-                               placeholder="Enter your password" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-lock icon"></i>
+                        <input type="password" class="form-control" name="password"
+                               placeholder="Enter password" required autocomplete="current-password">
                     </div>
-                    
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember">
-                        <label class="form-check-label" for="remember">
-                            Remember me
-                        </label>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100 mb-3">
-                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
-                    </button>
-                    
-                    <div class="text-center">
-                        <a href="#" class="text-decoration-none">Forgot password?</a>
-                    </div>
-                </form>
-                
-                <hr class="my-4">
-                
-                <div class="text-center">
-                    <p class="text-muted mb-2">Demo Credentials:</p>
-                    <small class="text-muted">
-                        <strong>Username:</strong> doctor<br>
-                        <strong>Password:</strong> thyronet2024
-                    </small>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </button>
+            </form>
+
+            <div class="demo-box">
+                <div class="label">Demo Credentials</div>
+                <div class="demo-cred">
+                    <span>Username: <strong>doctor</strong></span>
+                    <span>Password: <strong>thyronet2024</strong></span>
                 </div>
             </div>
         </div>
+
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
