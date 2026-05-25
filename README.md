@@ -84,16 +84,6 @@ thyronet-ai/
 
 ---
 
-## Team
-
-| Name | USN |
-|------|-----|
-| Abhyutthan Singh | NNM22IS005 |
-| Akshaya H | NNM22IS012 |
-| Riju D Shetty | NNM22IS128 |
-| Srajan Shetty | NNM22IS174 |
-
-**Guide:** Mr. Prashanth Kumar, Assistant Professor GD2
 **Institution:** NMAM Institute of Technology, Nitte
 **Department:** Information Science and Engineering
 
